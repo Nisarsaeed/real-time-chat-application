@@ -1,37 +1,39 @@
-import {Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Form } from './modules/Form';
 import { Dashboard } from './modules/Dashboard';
 import './App.css';
 
-// const ProtectedRoute = ({ children }) => {
-//   const isloggedIn = false; 
+const ProtectedRoute = ({ children }) => {
 
-//   if (!isloggedIn) {
-//     return <Navigate to={'/sign_in'} />;
-//   } else if (isloggedIn && ['/sign_in/', '/sign_up/'].includes(window.location.pathname)) {
-//     return <Navigate to={'/'} />
-//   }
+  const isLoggedIn = true;
+  const location = useLocation();
 
-//   return children;
-// }
+  if (!isLoggedIn && location.pathname !== '/sign_in' && location.pathname !== '/sign_up') {
+    return <Navigate to={'/sign_in'} />;
+  }
+  else if (isLoggedIn && (location.pathname === '/sign_in' || location.pathname === '/sign_up')) {
+    return <Navigate to={'/'} />;
+  }
 
-
+  return children;
+}
 
 function App() {
   return (
-  
     <Routes>
       <Route path='/' element={
+        <ProtectedRoute>
           <Dashboard />
-      }></Route>
-      <Route path='/sign_in' element={
-          <Form isSignInPage={true}/>
-      }></Route> 
+        </ProtectedRoute>} />
       <Route path='/sign_up' element={
-          <Form isSignInPage={false}/>
-      }/> 
+        <ProtectedRoute>
+          <Form isSignInPage={false} />
+        </ProtectedRoute>} />
+      <Route path='/sign_in' element=
+        {<ProtectedRoute>
+          <Form isSignInPage={true} />
+        </ProtectedRoute>} />
     </Routes>
-
   );
 }
 
