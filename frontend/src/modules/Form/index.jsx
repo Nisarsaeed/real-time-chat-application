@@ -4,7 +4,7 @@ import { Button } from "../../components/Button";
 import { useNavigate } from "react-router-dom";
 
 export const Form = ({ isSignInPage }) => {
-
+    
     const navigate = useNavigate();
 
     const [data, setData] = useState({
@@ -33,15 +33,15 @@ export const Form = ({ isSignInPage }) => {
             },
             body: JSON.stringify(data)
         });
-        
+
         if (res.status === 400) {
             alert('Invalid Credentials');
         }
         else {
             const resData = await res.json();
             if (resData.token) {
-                localStorage.setItem('user:token ', resData.token);
-                localStorage.setItem('user:detils ', JSON.stringify(resData.user));
+                localStorage.setItem('user:token', resData.token);
+                localStorage.setItem('user:detail', JSON.stringify(resData.user));
                 navigate('/');
             }
         }
@@ -52,7 +52,7 @@ export const Form = ({ isSignInPage }) => {
             <div className="text-4xl font-extrabold my-3"> Welcome {isSignInPage && 'Back'}</div>
             <div className="text-xl my-2"> {isSignInPage ? 'Sign In to your account' : 'Sign Up to get Started'}</div>
             <form className="w-1/4 flex flex-col items-center" onSubmit={(e) => handleSubmit(e)}>
-                <Input type="text" placeholder="Enter Name" value={data.Name} onChange={(e) => handleInputChange(e, 'Name')} className={isSignInPage ? 'hidden' : 'w-full'} />
+                <Input type="text" isRequired={!isSignInPage} placeholder="Enter Name" value={data.Name} onChange={(e) => handleInputChange(e, 'Name')} className={isSignInPage ? 'hidden' : 'w-full'} />
                 <Input type="email" placeholder="Enter Email" value={data.Email} onChange={(e) => handleInputChange(e, 'Email')} className="w-full" />
                 <Input type="password" placeholder="Enter Password" value={data.Password} onChange={(e) => handleInputChange(e, 'Password')} className="w-full" />
                 <Button type="submit" className={''} />
