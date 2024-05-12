@@ -74,10 +74,10 @@ app.post('/api/login', async (req, res, next) => {
                         await Users.updateOne({ _id: user._id }, {
                             $set: { token }
                         })
-                        user.save();
-                        next();
+                       user.save();
+                       return res.status(200).json({ user: {id:user._id , Email: user.Email, Name: user.Name }, token: token });
+                        
                     })
-                    res.status(200).json({ user: { Email: user.Email, Name: user.Name }, token: user.token });
                 }
             }
         }
@@ -142,7 +142,7 @@ app.get('/api/message/:conversationId', async (req, res) => {
         const messages = await Messages.find({ conversationId });
         const messageUserData = Promise.all(messages.map(async (message) => {
             const user = await Users.findById(message.senderId);
-            return { user: { Email: user.Email, Name: user.Name }, message: message.message };
+            return { user: { id:user._id ,Email: user.Email, Name: user.Name }, message: message.message };
         }));
         res.status(200).json(await messageUserData);
     }
