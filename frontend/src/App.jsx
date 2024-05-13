@@ -8,12 +8,12 @@ const ProtectedRoute = ({ children }) => {
   const isLoggedIn = true;
   const location = useLocation();
 
-  if (!isLoggedIn && location.pathname !== '/sign_in' && location.pathname !== '/sign_up') {
-    return <Navigate to={'/sign_in'} />;
-  }
-  else if (isLoggedIn && (location.pathname === '/sign_in' || location.pathname === '/sign_up')) {
-    return <Navigate to={'/'} />;
-  }
+  // if (!isLoggedIn && location.pathname !== '/sign_in' && location.pathname !== '/sign_up') {
+  //   return <Navigate to={'/sign_in'} />;
+  // }
+  // else if (isLoggedIn && (location.pathname === '/sign_in' || location.pathname === '/sign_up')) {
+  //   return <Navigate to={'/'} />;
+  // }
 
   return children;
 }
