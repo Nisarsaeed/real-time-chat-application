@@ -63,15 +63,35 @@ export const Dashboard = () => {
       }
 
       const resData = await res.json();
-      setConversationMessages({ messages: resData, reciever: user });
+      setConversationMessages({
+        messages: resData,
+        reciever: user,
+        conversationId: conversationId,
+      });
     } catch (error) {
       console.error("Error fetching messages:", error);
     }
   };
 
+  const sendNewMessage = async () => {
+    const res = await fetch(`http://localhost:8000/api/message`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        conversationId: conversationMessages?.conversationId,
+        senderId: userDetail?.id,
+        message: newInputmessage,
+        recieverId: conversationMessages?.user?.recieverId,
+      }),
+    });
+    setNewInputMessage("");
+  };
+
   return (
     <div className="w-full h-screen flex  ">
-      <div className="w-[30%] border h-full bg-Light ">
+      <div className="w-[25%] border h-full bg-Light ">
         <div className="flex  items-center justify-center w-full h-[20%]  border-b-2 border-slate-300">
           <div className="border border-primary rounded-full">
             {" "}
@@ -112,7 +132,7 @@ export const Dashboard = () => {
         </div>
       </div>
       {conversationMessages?.reciever?.Name ? (
-        <div className="w-[70%] border h-full ">
+        <div className="w-[50%] border h-full ">
           <div className="py-4 px-6 my-4 h-[10%] flex items-center bg-slate-200 rounded-[3rem]   w-[75%] mx-auto">
             <div className="border border-primary rounded-full">
               <img src={Avatar} alt="user-img" width={60} height={60} />
@@ -165,13 +185,14 @@ export const Dashboard = () => {
             <Input
               type="text"
               placeholder="Type a message"
-              className="w-[85%]"
+              className="w-[80%]"
               value={newInputmessage}
               onChange={(e) => setNewInputMessage(e.target.value)}
             />
             <FontAwesomeIcon
               icon={faPaperPlane}
               className="ml-6 h-5 cursor-pointer"
+              onClick={() => sendNewMessage()}
             />
             <FontAwesomeIcon
               icon={faPlusCircle}
