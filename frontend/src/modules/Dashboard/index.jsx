@@ -3,171 +3,191 @@ import { Input } from "../../components/Input";
 import Avatar from "../../assets/avatar.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-    faPaperPlane,
-    faPlusCircle,
-    faMicrophone,
-    faPhone,
+  faPaperPlane,
+  faPlusCircle,
+  faMicrophone,
+  faPhone,
 } from "@fortawesome/free-solid-svg-icons";
 
 export const Dashboard = () => {
-    const [userDetail, setUserDetail] = useState(
-        JSON.parse(localStorage.getItem("user:detail"))
-    );
-    const [newInputmessage, setNewInputMessage] = useState('');
-    const [conversations, setConversations] = useState([]);
-    const [conversationMessages, setConversationMessages] = useState([]);
+  const [userDetail, setUserDetail] = useState(
+    JSON.parse(localStorage.getItem("user:detail"))
+  );
+  const [newInputmessage, setNewInputMessage] = useState("");
+  const [conversations, setConversations] = useState([]);
+  const [conversationMessages, setConversationMessages] = useState({});
+  console.log(conversationMessages, "messages");
+  console.log(conversations, "cov");
 
-    useEffect(() => {
-        const fetchConversations = async () => {
-            try {
-                const res = await fetch(
-                    `http://localhost:8000/api/conversation/${userDetail.id}`,
-                    {
-                        method: "GET",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    }
-                );
+  useEffect(() => {
+    const fetchConversations = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:8000/api/conversation/${userDetail.id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
-                if (!res.ok) {
-                    throw new Error("Failed to fetch conversations");
-                }
-
-                const resData = await res.json();
-                setConversations(resData);
-            } catch (error) {
-                console.error("Error fetching conversations:", error);
-            }
-        };
-
-        fetchConversations();
-    }, [userDetail]); 
-
-    const fetchConversationMessages = async (conversationId) => {
-        try {
-            const res = await fetch(
-                `http://localhost:8000/api/message/${conversationId}`,
-                {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-
-            if (!res.ok) {
-                throw new Error("Failed to fetch messages");
-            }
-
-            const resData = await res.json();
-            setConversationMessages(resData);
-        } catch (error) {
-            console.error("Error fetching messages:", error);
+        if (!res.ok) {
+          throw new Error("Failed to fetch conversations");
         }
+
+        const resData = await res.json();
+        setConversations(resData);
+      } catch (error) {
+        console.error("Error fetching conversations:", error);
+      }
     };
 
-    return (
-        <div className="w-full h-screen flex  ">
-            <div className="w-[30%] border h-full bg-Light ">
-                <div className="flex  items-center justify-center w-full h-[20%]  border-b-2 border-slate-300">
-                    <div className="border border-primary rounded-full">
-                        {" "}
-                        <img src={Avatar} alt="user-avatar" width={75} height={75} />{" "}
-                    </div>
-                    <div className="flex flex-col ml-3">
-                        <div className="text-lg font-medium">{userDetail?.Name}</div>
-                        <div className="">My Account</div>
-                    </div>
-                </div>
-                <div className="h-[80%] px-10 overflow-y-scroll">
-                    <div className="text-primary mt-4 font-semibold text-xl">Chats</div>
-                    <div className="">
-                        {conversations.length > 0 ? (
-                            conversations.map(({ conversationId, user }) => (
-                                <div
-                                    className="p-4 my-4 flex itemscenter hover:bg-slate-200 border-b-2 hover:rounded-lg  cursor-pointer"
-                                    onClick={() => fetchConversationMessages(conversationId)}
-                                    key={conversationId}
-                                >
-                                    <div className="border border-primary rounded-full">
-                                        <img src={Avatar} alt="user-img" width={60} height={60} />
-                                    </div>
-                                    <div className="ml-4">
-                                        <p className="font-medium">{user?.Name}</p>
-                                        <p className="font-mute">{user?.Email}</p>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="mt-[5rem] font-semibold text-center text-large ">
-                                No Conversation
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-            <div className="w-[70%] border h-full ">
-                <div className="py-4 px-6 my-4 h-[10%] flex items-center bg-slate-200 rounded-[3rem]   w-[75%] mx-auto">
-                    <div className="border border-primary rounded-full">
-                        <img src={Avatar} alt="user-img" width={60} height={60} />
-                    </div>
-                    <div className="ml-4 cursor-pointer">
-                        <p className="font-medium">{conversations.user?.Name}</p>
-                        <p className="font-mute">Online</p>
-                    </div>
-                    <FontAwesomeIcon
-                        icon={faPhone}
-                        className="h-5 cursor-pointer ml-auto mr-2"
-                    />
-                </div>
-                <div className="overflow-y-scroll h-[70%] w-full">
-                    <div className="px-8 py-4">
-                        {conversationMessages.length > 0 ? (
-                            conversationMessages.map(({ user: { id } = {}, message }, index) => {
-                                if (id === userDetail?.id) {
-                                    return (
-                                        <div
-                                            key={index}
-                                            className="bg-primary max-w-[40%] ml-auto min-h-[80px] rounded-xl rounded-tr-none p-4 my-3 text-white"
-                                        >
-                                            {message}
-                                        </div>
-                                    );
-                                } else {
-                                    return (
-                                        <div
-                                            key={index}
-                                            className="bg-slate-300 max-w-[40%] min-h-[80px] rounded-xl rounded-tl-none p-4 my-3"
-                                        >
-                                            {message}
-                                        </div>
-                                    );
-                                }
-                            })
-                        ) : (
-                            <div className="mt-[5rem] text-large font-semibold text-center">
-                                No Messages
-                            </div>
-                        )}
-                    </div>
-                </div>
-                <div className="p-8 h-[10%]">
-                    <Input type="text" placeholder='Type a message' className='w-[85%]' value={newInputmessage} onChange={(e) => setNewInputMessage(e.target.value)} />
-                    <FontAwesomeIcon
-                        icon={faPaperPlane}
-                        className="ml-6 h-5 cursor-pointer"
-                    />
-                    <FontAwesomeIcon
-                        icon={faPlusCircle}
-                        className="ml-6 h-5 cursor-pointer"
-                    />
-                    <FontAwesomeIcon
-                        icon={faMicrophone}
-                        className="ml-6 h-5 cursor-pointer"
-                    />
-                </div>
-            </div>
+    fetchConversations();
+  }, [userDetail]);
+
+  const fetchConversationMessages = async (conversationId, user) => {
+    try {
+      const res = await fetch(
+        `http://localhost:8000/api/message/${conversationId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch messages");
+      }
+
+      const resData = await res.json();
+      setConversationMessages({ messages: resData, reciever: user });
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    }
+  };
+
+  return (
+    <div className="w-full h-screen flex  ">
+      <div className="w-[30%] border h-full bg-Light ">
+        <div className="flex  items-center justify-center w-full h-[20%]  border-b-2 border-slate-300">
+          <div className="border border-primary rounded-full">
+            {" "}
+            <img src={Avatar} alt="user-avatar" width={75} height={75} />{" "}
+          </div>
+          <div className="flex flex-col ml-3">
+            <div className="text-lg font-medium">{userDetail?.Name}</div>
+            <div className="">My Account</div>
+          </div>
         </div>
-    );
+        <div className="h-[80%] px-10 overflow-y-scroll">
+          <div className="text-primary mt-4 font-semibold text-xl">Chats</div>
+          <div className="">
+            {conversations.length > 0 ? (
+              conversations.map(({ conversationId, user }) => (
+                <div
+                  className="p-4 my-4 flex itemscenter hover:bg-slate-200 border-b-2 hover:rounded-lg  cursor-pointer"
+                  onClick={() =>
+                    fetchConversationMessages(conversationId, user)
+                  }
+                  key={conversationId}
+                >
+                  <div className="border border-primary rounded-full">
+                    <img src={Avatar} alt="user-img" width={60} height={60} />
+                  </div>
+                  <div className="ml-4">
+                    <p className="font-medium">{user?.Name}</p>
+                    <p className="font-mute">{user?.Email}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="mt-[5rem] font-semibold text-center text-large ">
+                No Conversation
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+      {conversationMessages?.reciever?.Name ? (
+        <div className="w-[70%] border h-full ">
+          <div className="py-4 px-6 my-4 h-[10%] flex items-center bg-slate-200 rounded-[3rem]   w-[75%] mx-auto">
+            <div className="border border-primary rounded-full">
+              <img src={Avatar} alt="user-img" width={60} height={60} />
+            </div>
+            <div className="ml-4 cursor-pointer">
+              <p className="font-medium">
+                {conversationMessages.reciever.Name}
+              </p>
+              <p className="font-mute">Online</p>
+            </div>
+            <FontAwesomeIcon
+              icon={faPhone}
+              className="h-5 cursor-pointer ml-auto mr-2"
+            />
+          </div>
+          <div className="overflow-y-scroll h-[70%] w-full">
+            <div className="px-8 py-4">
+              {conversationMessages.messages.length > 0 ? (
+                conversationMessages.messages.map(
+                  ({ user: { id } = {}, message }, index) => {
+                    if (id === userDetail?.id) {
+                      return (
+                        <div
+                          key={index}
+                          className="bg-primary max-w-[40%] ml-auto min-h-[80px] rounded-xl rounded-tr-none p-4 my-3 text-white"
+                        >
+                          {message}
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <div
+                          key={index}
+                          className="bg-slate-300 max-w-[40%] min-h-[80px] rounded-xl rounded-tl-none p-4 my-3"
+                        >
+                          {message}
+                        </div>
+                      );
+                    }
+                  }
+                )
+              ) : (
+                <div className="mt-[5rem] text-large font-semibold text-center">
+                  No Messages
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="p-8 h-[10%]">
+            <Input
+              type="text"
+              placeholder="Type a message"
+              className="w-[85%]"
+              value={newInputmessage}
+              onChange={(e) => setNewInputMessage(e.target.value)}
+            />
+            <FontAwesomeIcon
+              icon={faPaperPlane}
+              className="ml-6 h-5 cursor-pointer"
+            />
+            <FontAwesomeIcon
+              icon={faPlusCircle}
+              className="ml-6 h-5 cursor-pointer"
+            />
+            <FontAwesomeIcon
+              icon={faMicrophone}
+              className="ml-6 h-5 cursor-pointer"
+            />
+          </div>
+        </div>
+      ) : (
+        <div className="mt-[5rem] text-large font-semibold text-center w-[70%]">
+          No Conversation Selected
+        </div>
+      )}
+    </div>
+  );
 };
