@@ -16,8 +16,10 @@ export const Dashboard = () => {
   const [newInputmessage, setNewInputMessage] = useState("");
   const [conversations, setConversations] = useState([]);
   const [conversationMessages, setConversationMessages] = useState({});
+  const [allUsers, setAllUsers]= useState([]);
   console.log(conversationMessages, "messages");
   console.log(conversations, "cov");
+  console.log(allUsers,'users');
 
   useEffect(() => {
     const fetchConversations = async () => {
@@ -46,6 +48,34 @@ export const Dashboard = () => {
     fetchConversations();
   }, [userDetail]);
 
+  useEffect(() => {
+    const fetchAllUsers = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:8000/api/users`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch Users");
+        }
+
+        const resData = await res.json();
+        console.log('resdar', resData);
+        setAllUsers(resData);
+      } catch (error) {
+        console.error("Error fetching Users:", error);
+      }
+    };
+
+    fetchAllUsers();
+  },[]);
+
   const fetchConversationMessages = async (conversationId, user) => {
     try {
       const res = await fetch(
@@ -73,7 +103,7 @@ export const Dashboard = () => {
     }
   };
 
-  const sendNewMessage = async () => {
+  const sendNewMessage = async (e) => {
     const res = await fetch(`http://localhost:8000/api/message`, {
       method: "POST",
       headers: {
@@ -83,7 +113,7 @@ export const Dashboard = () => {
         conversationId: conversationMessages?.conversationId,
         senderId: userDetail?.id,
         message: newInputmessage,
-        recieverId: conversationMessages?.user?.recieverId,
+        recieverId: conversationMessages?.reciever?.recieverId,
       }),
     });
     setNewInputMessage("");
@@ -124,7 +154,7 @@ export const Dashboard = () => {
                 </div>
               ))
             ) : (
-              <div className="mt-[5rem] font-semibold text-center text-large ">
+              <div className="mt-[5rem] font-semibold text-center text-lg ">
                 No Conversation
               </div>
             )}
@@ -175,7 +205,7 @@ export const Dashboard = () => {
                   }
                 )
               ) : (
-                <div className="mt-[5rem] text-large font-semibold text-center">
+                <div className="mt-[5rem] text-lg font-semibold text-center">
                   No Messages
                 </div>
               )}
@@ -205,10 +235,39 @@ export const Dashboard = () => {
           </div>
         </div>
       ) : (
-        <div className="mt-[5rem] text-large font-semibold text-center w-[70%]">
+        <div className="mt-[5rem] text-lg font-semibold text-center w-[50%]">
           No Conversation Selected
         </div>
       )}
+      <div className="h-full w-[25%] border">
+        <div className="my-8 text-lg font-bold">All Available users</div>
+        <div className="overflow-y-scroll h-[85%] ">
+        {allUsers.length > 0 ? (
+              allUsers.map(({ user }) => (
+                <div
+                  className="p-4 my-4 flex itemscenter hover:bg-slate-200 border-b-2 hover:rounded-lg  cursor-pointer"
+                  onClick={() =>
+                    fetchConversationMessages('new',user)
+                  }
+                  key={user?.Email}
+                >
+                  <div className="border border-primary rounded-full">
+                    <img src={Avatar} alt="user-img" width={60} height={60} />
+                  </div>
+                  <div className="ml-4">
+                    <p className="font-medium">{user?.Name}</p>
+                    <p className="font-mute">{user?.Email}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="mt-[5rem] font-semibold text-center text-lg ">
+                No Registered 
+                Users
+              </div>
+            )}
+            </div>
+      </div>
     </div>
   );
 };
