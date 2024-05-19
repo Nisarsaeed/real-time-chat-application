@@ -16,10 +16,11 @@ export const Dashboard = () => {
   const [newInputmessage, setNewInputMessage] = useState("");
   const [conversations, setConversations] = useState([]);
   const [conversationMessages, setConversationMessages] = useState({});
-  const [allUsers, setAllUsers]= useState([]);
+  const [allUsers, setAllUsers] = useState([]);
+  console.log(userDetail, "details  ");
   console.log(conversationMessages, "messages");
   console.log(conversations, "cov");
-  console.log(allUsers,'users');
+  console.log(allUsers, "users");
 
   useEffect(() => {
     const fetchConversations = async () => {
@@ -51,30 +52,45 @@ export const Dashboard = () => {
   useEffect(() => {
     const fetchAllUsers = async () => {
       try {
-        const res = await fetch(
-          `http://localhost:8000/api/users`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const res = await fetch(`http://localhost:8000/api/users`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
         if (!res.ok) {
           throw new Error("Failed to fetch Users");
         }
 
-        const resData = await res.json();
-        console.log('resdar', resData);
-        setAllUsers(resData);
+        const allFetchedUsers = await res.json();
+        console.log(allFetchedUsers, "allUsers");
+
+        const filteredLoggedInUser = allFetchedUsers.filter(
+          (user) => user.user.recieverId !== userDetail.id
+        );
+        console.log(filteredLoggedInUser, "filteredUsers");
+
+        const filteredUsersAlreadyHavingConversation =
+          filteredLoggedInUser.filter((user) => {
+            return !conversations.some(
+              (conversation) =>
+                conversation.user.recieverId === user.user.recieverId
+            );
+          });
+        console.log(
+          filteredUsersAlreadyHavingConversation,
+          "filteredUsersWithoutExistingRecipients"
+        );
+
+        setAllUsers(filteredUsersAlreadyHavingConversation);
       } catch (error) {
         console.error("Error fetching Users:", error);
       }
     };
 
     fetchAllUsers();
-  },[]);
+  }, [userDetail, conversations]); // Include userDetail in the dependency array
 
   const fetchConversationMessages = async (conversationId, user) => {
     try {
@@ -242,31 +258,28 @@ export const Dashboard = () => {
       <div className="h-full w-[25%] border">
         <div className="my-8 text-lg font-bold">All Available users</div>
         <div className="overflow-y-scroll h-[85%] ">
-        {allUsers.length > 0 ? (
-              allUsers.map(({ user }) => (
-                <div
-                  className="p-4 my-4 flex itemscenter hover:bg-slate-200 border-b-2 hover:rounded-lg  cursor-pointer"
-                  onClick={() =>
-                    fetchConversationMessages('new',user)
-                  }
-                  key={user?.Email}
-                >
-                  <div className="border border-primary rounded-full">
-                    <img src={Avatar} alt="user-img" width={60} height={60} />
-                  </div>
-                  <div className="ml-4">
-                    <p className="font-medium">{user?.Name}</p>
-                    <p className="font-mute">{user?.Email}</p>
-                  </div>
+          {allUsers.length > 0 ? (
+            allUsers.map(({ user }) => (
+              <div
+                className="p-4 my-4 flex itemscenter hover:bg-slate-200 border-b-2 hover:rounded-lg  cursor-pointer"
+                onClick={() => fetchConversationMessages("new", user)}
+                key={user?.Email}
+              >
+                <div className="border border-primary rounded-full">
+                  <img src={Avatar} alt="user-img" width={60} height={60} />
                 </div>
-              ))
-            ) : (
-              <div className="mt-[5rem] font-semibold text-center text-lg ">
-                No Registered 
-                Users
+                <div className="ml-4">
+                  <p className="font-medium">{user?.Name}</p>
+                  <p className="font-mute">{user?.Email}</p>
+                </div>
               </div>
-            )}
+            ))
+          ) : (
+            <div className="mt-[5rem] font-semibold text-center text-lg ">
+              No Registered Users
             </div>
+          )}
+        </div>
       </div>
     </div>
   );
