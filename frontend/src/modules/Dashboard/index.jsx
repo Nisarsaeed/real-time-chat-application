@@ -8,19 +8,36 @@ import {
   faMicrophone,
   faPhone,
 } from "@fortawesome/free-solid-svg-icons";
+import { io } from "socket.io-client";
 
 export const Dashboard = () => {
   const [userDetail, setUserDetail] = useState(
     JSON.parse(localStorage.getItem("user:detail"))
   );
-  const [newInputmessage, setNewInputMessage] = useState("");
+  const [messages, setMessages] = useState("");
   const [conversations, setConversations] = useState([]);
   const [conversationMessages, setConversationMessages] = useState({});
   const [allUsers, setAllUsers] = useState([]);
-  console.log(userDetail, "details  ");
-  console.log(conversationMessages, "messages");
-  console.log(conversations, "cov");
-  console.log(allUsers, "users");
+  const [socket, setSocket] = useState(null);
+
+  useEffect(() => {
+    setSocket(io('http://localhost:8080'));
+  }, []);
+
+  useEffect(() => {
+    if (socket) {
+      socket.emit('addUser', userDetail?.id);
+      socket.on('getUsers', (users) => {
+        console.log('activeUsers :>> ', users);
+      });
+      socket.on('getMessage', (data) => {
+        setConversationMessages((prev) => ({
+          ...prev,
+          messages: [...prev.messages, { user: data.user, message: data.message }]
+        }));
+      });
+    }
+  }, [socket, userDetail?.id]);
 
   useEffect(() => {
     const fetchConversations = async () => {
@@ -64,12 +81,10 @@ export const Dashboard = () => {
         }
 
         const allFetchedUsers = await res.json();
-        console.log(allFetchedUsers, "allUsers");
 
         const filteredLoggedInUser = allFetchedUsers.filter(
           (user) => user.user.recieverId !== userDetail.id
         );
-        console.log(filteredLoggedInUser, "filteredUsers");
 
         const filteredUsersAlreadyHavingConversation =
           filteredLoggedInUser.filter((user) => {
@@ -78,11 +93,7 @@ export const Dashboard = () => {
                 conversation.user.recieverId === user.user.recieverId
             );
           });
-        console.log(
-          filteredUsersAlreadyHavingConversation,
-          "filteredUsersWithoutExistingRecipients"
-        );
-
+        
         setAllUsers(filteredUsersAlreadyHavingConversation);
       } catch (error) {
         console.error("Error fetching Users:", error);
@@ -90,7 +101,7 @@ export const Dashboard = () => {
     };
 
     fetchAllUsers();
-  }, [userDetail, conversations]); // Include userDetail in the dependency array
+  }, [userDetail, conversations]);
 
   const fetchConversationMessages = async (conversationId, user) => {
     try {
@@ -119,20 +130,36 @@ export const Dashboard = () => {
     }
   };
 
-  const sendNewMessage = async (e) => {
-    const res = await fetch(`http://localhost:8000/api/message`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        conversationId: conversationMessages?.conversationId,
+  const sendNewMessage = async () => {
+    try {
+      socket?.emit('sendMessage', {
         senderId: userDetail?.id,
-        message: newInputmessage,
         recieverId: conversationMessages?.reciever?.recieverId,
-      }),
-    });
-    setNewInputMessage("");
+        message: messages,
+        conversationId: conversationMessages?.conversationId,
+      });
+
+      const res = await fetch(`http://localhost:8000/api/message`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          conversationId: conversationMessages?.conversationId,
+          senderId: userDetail?.id,
+          message: messages,
+          recieverId: conversationMessages?.reciever?.recieverId,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to send new message");
+      }
+
+      setMessages("");
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
   };
 
   return (
@@ -140,8 +167,8 @@ export const Dashboard = () => {
       <div className="w-[25%] border h-full bg-Light ">
         <div className="flex  items-center justify-center w-full h-[20%]  border-b-2 border-slate-300">
           <div className="border border-primary rounded-full">
-            {" "}
-            <img src={Avatar} alt="user-avatar" width={75} height={75} />{" "}
+            
+            <img src={Avatar} alt="user-avatar" width={75} height={75} />
           </div>
           <div className="flex flex-col ml-3">
             <div className="text-lg font-medium">{userDetail?.Name}</div>
@@ -232,8 +259,8 @@ export const Dashboard = () => {
               type="text"
               placeholder="Type a message"
               className="w-[80%]"
-              value={newInputmessage}
-              onChange={(e) => setNewInputMessage(e.target.value)}
+              value={messages}
+              onChange={(e) => setMessages(e.target.value)}
             />
             <FontAwesomeIcon
               icon={faPaperPlane}
