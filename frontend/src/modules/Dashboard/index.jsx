@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Input } from "../../components/Input";
 import Avatar from "../../assets/avatar.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,21 +19,25 @@ export const Dashboard = () => {
   const [conversationMessages, setConversationMessages] = useState({});
   const [allUsers, setAllUsers] = useState([]);
   const [socket, setSocket] = useState(null);
+  const messageRef = useRef(null);
 
   useEffect(() => {
-    setSocket(io('http://localhost:8080'));
+    setSocket(io("http://localhost:8080"));
   }, []);
 
   useEffect(() => {
     if (socket) {
-      socket.emit('addUser', userDetail?.id);
-      socket.on('getUsers', (users) => {
-        console.log('activeUsers :>> ', users);
+      socket.emit("addUser", userDetail?.id);
+      socket.on("getUsers", (users) => {
+        console.log("activeUsers :>> ", users);
       });
-      socket.on('getMessage', (data) => {
+      socket.on("getMessage", (data) => {
         setConversationMessages((prev) => ({
           ...prev,
-          messages: [...prev.messages, { user: data.user, message: data.message }]
+          messages: [
+            ...prev.messages,
+            { user: data.user, message: data.message },
+          ],
         }));
       });
     }
@@ -93,7 +97,7 @@ export const Dashboard = () => {
                 conversation.user.recieverId === user.user.recieverId
             );
           });
-        
+
         setAllUsers(filteredUsersAlreadyHavingConversation);
       } catch (error) {
         console.error("Error fetching Users:", error);
@@ -102,6 +106,12 @@ export const Dashboard = () => {
 
     fetchAllUsers();
   }, [userDetail, conversations]);
+
+  useEffect(() => {
+    if (messageRef.current) {
+      messageRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [conversationMessages.messages]);
 
   const fetchConversationMessages = async (conversationId, user) => {
     try {
@@ -132,7 +142,7 @@ export const Dashboard = () => {
 
   const sendNewMessage = async () => {
     try {
-      socket?.emit('sendMessage', {
+      socket?.emit("sendMessage", {
         senderId: userDetail?.id,
         recieverId: conversationMessages?.reciever?.recieverId,
         message: messages,
@@ -167,7 +177,6 @@ export const Dashboard = () => {
       <div className="w-[25%] border h-full bg-Light ">
         <div className="flex  items-center justify-center w-full h-[20%]  border-b-2 border-slate-300">
           <div className="border border-primary rounded-full">
-            
             <img src={Avatar} alt="user-avatar" width={75} height={75} />
           </div>
           <div className="flex flex-col ml-3">
@@ -228,21 +237,27 @@ export const Dashboard = () => {
                   ({ user: { id } = {}, message }, index) => {
                     if (id === userDetail?.id) {
                       return (
-                        <div
-                          key={index}
-                          className="bg-primary max-w-[40%] ml-auto min-h-[80px] rounded-xl rounded-tr-none p-4 my-3 text-white"
-                        >
-                          {message}
-                        </div>
+                        <>
+                          <div
+                            key={index}
+                            className="bg-primary max-w-[40%] ml-auto min-h-[80px] rounded-xl rounded-tr-none p-4 my-3 text-white"
+                          >
+                            {message}
+                          </div>
+                          <div ref={messageRef}></div>
+                        </>
                       );
                     } else {
                       return (
-                        <div
-                          key={index}
-                          className="bg-slate-300 max-w-[40%] min-h-[80px] rounded-xl rounded-tl-none p-4 my-3"
-                        >
-                          {message}
-                        </div>
+                        <>
+                          <div
+                            key={index}
+                            className="bg-slate-300 max-w-[40%] min-h-[80px] rounded-xl rounded-tl-none p-4 my-3"
+                          >
+                            {message}
+                          </div>
+                          <div ref={messageRef}></div>
+                        </>
                       );
                     }
                   }
