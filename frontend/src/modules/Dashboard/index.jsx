@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Input } from "../../components/Input";
 import Avatar from "../../assets/avatar.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -43,32 +43,32 @@ export const Dashboard = () => {
     }
   }, [socket, userDetail?.id]);
 
-  useEffect(() => {
-    const fetchConversations = async () => {
-      try {
-        const res = await fetch(
-          `http://localhost:8000/api/conversation/${userDetail.id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!res.ok) {
-          throw new Error("Failed to fetch conversations");
+  const fetchConversations = useCallback( async () => {
+    try {
+      const res = await fetch(
+        `http://localhost:8000/api/conversation/${userDetail.id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
+      );
 
-        const resData = await res.json();
-        setConversations(resData);
-      } catch (error) {
-        console.error("Error fetching conversations:", error);
+      if (!res.ok) {
+        throw new Error("Failed to fetch conversations");
       }
-    };
 
+      const resData = await res.json();
+      setConversations(resData);
+    } catch (error) {
+      console.error("Error fetching conversations:", error);
+    }
+  },[userDetail.id]);
+
+  useEffect(() => {
     fetchConversations();
-  }, [userDetail]);
+  },[fetchConversations]);
 
   useEffect(() => {
     const fetchAllUsers = async () => {
@@ -105,7 +105,7 @@ export const Dashboard = () => {
     };
 
     fetchAllUsers();
-  }, [userDetail, conversations]);
+  }, [userDetail,conversations]);
 
   useEffect(() => {
     if (messageRef.current) {
@@ -165,8 +165,10 @@ export const Dashboard = () => {
       if (!res.ok) {
         throw new Error("Failed to send new message");
       }
-
       setMessages("");
+      if (conversationMessages?.conversationId==='new'){
+        fetchConversations();
+      }
     } catch (error) {
       console.error("Error sending message:", error);
     }
