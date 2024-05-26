@@ -43,7 +43,7 @@ export const Dashboard = () => {
     }
   }, [socket, userDetail?.id]);
 
-  const fetchConversations = useCallback( async () => {
+  const fetchConversations = useCallback(async () => {
     try {
       const res = await fetch(
         `http://localhost:8000/api/conversation/${userDetail.id}`,
@@ -64,11 +64,11 @@ export const Dashboard = () => {
     } catch (error) {
       console.error("Error fetching conversations:", error);
     }
-  },[userDetail.id]);
+  }, [userDetail.id]);
 
   useEffect(() => {
     fetchConversations();
-  },[fetchConversations]);
+  }, [fetchConversations]);
 
   useEffect(() => {
     const fetchAllUsers = async () => {
@@ -105,7 +105,7 @@ export const Dashboard = () => {
     };
 
     fetchAllUsers();
-  }, [userDetail,conversations]);
+  }, [userDetail, conversations]);
 
   useEffect(() => {
     if (messageRef.current) {
@@ -166,7 +166,7 @@ export const Dashboard = () => {
         throw new Error("Failed to send new message");
       }
       setMessages("");
-      if (conversationMessages?.conversationId==='new'){
+      if (conversationMessages?.conversationId === "new") {
         fetchConversations();
       }
     } catch (error) {
@@ -237,31 +237,21 @@ export const Dashboard = () => {
               {conversationMessages.messages.length > 0 ? (
                 conversationMessages.messages.map(
                   ({ user: { id } = {}, message }, index) => {
-                    if (id === userDetail?.id) {
-                      return (
-                        <>
-                          <div
-                            key={index}
-                            className="bg-primary max-w-[40%] ml-auto min-h-[80px] rounded-xl rounded-tr-none p-4 my-3 text-white break-all"
-                          >
-                            {message}
-                          </div>
-                          <div ref={messageRef}></div>
-                        </>
-                      );
-                    } else {
-                      return (
-                        <>
-                          <div
-                            key={index}
-                            className="bg-slate-300 max-w-[40%] min-h-[80px] rounded-xl rounded-tl-none p-4 my-3"
-                          >
-                            {message}
-                          </div>
-                          <div ref={messageRef}></div>
-                        </>
-                      );
-                    }
+                    return (
+                      <>
+                        <div
+                          key={index}
+                          className={`max-w-[40%]  min-h-[80px] rounded-xl  p-4 my-3  break-all ${
+                            id === userDetail?.id
+                              ? "bg-primary ml-auto rounded-tr-none text-white"
+                              : "bg-slate-300 rounded-tl-none"
+                          }`}
+                        >
+                          {message}
+                        </div>
+                        <div ref={messageRef}></div>
+                      </>
+                    );
                   }
                 )
               ) : (
