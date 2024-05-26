@@ -186,8 +186,8 @@ export const Dashboard = () => {
             <div className="">My Account</div>
           </div>
         </div>
-        <div className="h-[80%] px-10 overflow-y-scroll">
-          <div className="text-primary mt-4 font-semibold text-xl">Chats</div>
+        <div className="h-[80%] px-6 overflow-y-scroll">
+          <div className="text-primary mt-4 font-bold text-xl">Chats</div>
           <div className="">
             {conversations.length > 0 ? (
               conversations.map(({ conversationId, user }) => (
@@ -216,7 +216,7 @@ export const Dashboard = () => {
         </div>
       </div>
       {conversationMessages?.reciever?.Name ? (
-        <div className="w-[50%] border h-full ">
+        <div className="w-[50%] border h-full relative">
           <div className="py-4 px-6 my-4 h-[10%] flex items-center bg-slate-200 rounded-[3rem]   w-[75%] mx-auto">
             <div className="border border-primary rounded-full">
               <img src={Avatar} alt="user-img" width={60} height={60} />
@@ -242,7 +242,7 @@ export const Dashboard = () => {
                         <>
                           <div
                             key={index}
-                            className="bg-primary max-w-[40%] ml-auto min-h-[80px] rounded-xl rounded-tr-none p-4 my-3 text-white"
+                            className="bg-primary max-w-[40%] ml-auto min-h-[80px] rounded-xl rounded-tr-none p-4 my-3 text-white break-all"
                           >
                             {message}
                           </div>
@@ -271,11 +271,15 @@ export const Dashboard = () => {
               )}
             </div>
           </div>
-          <div className="p-8 h-[10%]">
+          <div className="bg-gray-50 absolute bottom-0 w-full">
+            <FontAwesomeIcon
+              icon={faPlusCircle}
+              className="mx-6 h-5 cursor-pointer"
+            />
             <Input
               type="text"
               placeholder="Type a message"
-              className="w-[80%]"
+              className="w-[80%] focus:outline-none rounded-none bg-transparent border-none"
               value={messages}
               onChange={(e) => setMessages(e.target.value)}
             />
@@ -283,10 +287,6 @@ export const Dashboard = () => {
               icon={faPaperPlane}
               className="ml-6 h-5 cursor-pointer"
               onClick={() => sendNewMessage()}
-            />
-            <FontAwesomeIcon
-              icon={faPlusCircle}
-              className="ml-6 h-5 cursor-pointer"
             />
             <FontAwesomeIcon
               icon={faMicrophone}
@@ -300,8 +300,8 @@ export const Dashboard = () => {
         </div>
       )}
       <div className="h-full w-[25%] border">
-        <div className="my-8 text-lg font-bold">All Available users</div>
-        <div className="overflow-y-scroll h-[85%] ">
+        <div className="my-8 text-lg font-bold ml-6">Add New Users</div>
+        <div className="overflow-y-scroll h-[85%] px-6">
           {allUsers.length > 0 ? (
             allUsers.map(({ user }) => (
               <div
