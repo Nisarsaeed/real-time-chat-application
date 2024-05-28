@@ -108,7 +108,7 @@ app.post("/api/register", upload.single('profileImg'), async (req, res, next) =>
   }
 });
 
-app.post("/api/login", async (req, res, next) => {
+app.post("/api/login",upload.none(), async (req, res, next) => {
   try {
     const { Email, Password } = req.body;
     if (!Email || !Password) {
