@@ -15,6 +15,7 @@ require("./connection");
 const Users = require("./models/Users");
 const Conversations = require("./models/Conversations");
 const Messages = require("./models/Messages");
+const upload = require('./cloudinary/multerConfig');
 
 const port = process.env.PORT || 8000;
 
@@ -81,25 +82,27 @@ app.get("/", (req, res) => {
   res.send("welcome");
 });
 
-app.post("/api/register", async (req, res, next) => {
+app.post("/api/register", upload.single('profileImg'), async (req, res, next) => {
   try {
     const { Name, Email, Password } = req.body;
+    const profileImg = req.file ? req.file.path : null;
+
     if (!Name || !Email || !Password) {
-      res.status(400).send("Please Fill in the requested fields");
-    } else {
-      const isAlreadyExist = await Users.findOne({ Email });
-      if (isAlreadyExist) {
-        res.status(400).send("User Already Exist");
-      } else {
-        const newUser = new Users({ Name, Email });
-        bcryptjs.hash(Password, 10, (err, hashedPassword) => {
-          newUser.set("Password", hashedPassword);
-          newUser.save();
-          next();
-        });
-        return res.status(200).send("User Registered Successfully");
-      }
-    }
+      return res.status(400).send("Please fill in the requested fields");
+    } 
+
+    const isAlreadyExist = await Users.findOne({ Email });
+    if (isAlreadyExist) {
+     res.status(400).send("User already exists");
+    } 
+    else{
+    const newUser = new Users({ Name, Email, profileImg });
+    bcryptjs.hash(Password, 10, (err, hashedPassword) => {
+      newUser.set("Password", hashedPassword);
+      newUser.save();
+    });
+    return res.status(200).send("User registered successfully");
+  }
   } catch (error) {
     console.log("error:  ", error);
   }
