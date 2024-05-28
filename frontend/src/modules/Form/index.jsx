@@ -28,6 +28,10 @@ export const Form = ({ isSignInPage }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    //if user switches from signup and tries to register the profile img should be able to give error
+    if(!isSignInPage){
+      setProfileImg(null);
+    }
     const formData = new FormData(); // Create a new FormData object
     for (const key in data) {
       formData.append(key, data[key]); // Append each key-value pair from the data object to formData
@@ -90,7 +94,7 @@ export const Form = ({ isSignInPage }) => {
           onChange={(e) => handleInputChange(e, "Password")}
           className="w-full"
         />
-        <input type="file" accept="image/*" onChange={(e)=>setProfileImg(e.target.files[0])} />
+        <input type="file" accept="image/*" onChange={(e)=>setProfileImg(e.target.files[0])} className={isSignInPage ? "hidden" : "w-full"}/>
         <Button type="submit" />
       </form>
       <div className="mt-2">
