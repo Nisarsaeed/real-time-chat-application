@@ -143,7 +143,7 @@ app.post("/api/login",upload.none(), async (req, res, next) => {
               return res
                 .status(200)
                 .json({
-                  user: { id: user._id, Email: user.Email, Name: user.Name },
+                  user: { id: user._id, Email: user.Email, Name: user.Name, Avatar: user.profileImg },
                   token: token,
                 });
             }
@@ -182,7 +182,7 @@ app.get("/api/conversation/:userId", async (req, res) => {
         );
         const user = await Users.findById(recieverId);
         return {
-          user: { recieverId: user._id, Email: user.Email, Name: user.Name },
+          user: { recieverId: user._id, Email: user.Email, Name: user.Name, Avatar: user.profileImg },
           conversationId: conversation._id,
         };
       })
@@ -216,7 +216,6 @@ app.post("/api/message", async (req, res) => {
     }
     const newMessage = new Messages({ conversationId, senderId, message });
     await newMessage.save();
-    res.status(200).send("Message sent successfully");
   } catch (error) {
     console.log("Error ", error);
   }
@@ -248,7 +247,7 @@ app.get("/api/users", async (req, res) => {
     const usersData = Promise.all(
       users.map(async (user) => {
         return {
-          user: { Email: user.Email, Name: user.Name, recieverId: user._id },
+          user: { Email: user.Email, Name: user.Name, recieverId: user._id, Avatar: user.profileImg },
         };
       })
     );
