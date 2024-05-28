@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Input } from "../../components/Input";
-import Avatar from "../../assets/avatar.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPaperPlane,
@@ -179,7 +178,7 @@ export const Dashboard = () => {
       <div className="w-[25%] border h-full bg-Light ">
         <div className="flex  items-center justify-center w-full h-[20%]  border-b-2 border-slate-300">
           <div className="border border-primary rounded-full">
-            <img src={Avatar} alt="user-avatar" width={75} height={75} />
+            <img src={userDetail?.Avatar} alt="Avatar" width={75} height={75} />
           </div>
           <div className="flex flex-col ml-3">
             <div className="text-lg font-medium">{userDetail?.Name}</div>
@@ -199,7 +198,7 @@ export const Dashboard = () => {
                   key={conversationId}
                 >
                   <div className="border border-primary rounded-full">
-                    <img src={Avatar} alt="user-img" width={60} height={60} />
+                    <img src={user?.Avatar} alt="Avatar" width={60} height={60} />
                   </div>
                   <div className="ml-4">
                     <p className="font-medium">{user?.Name}</p>
@@ -219,7 +218,7 @@ export const Dashboard = () => {
         <div className="w-[50%] border h-full relative">
           <div className="py-4 px-6 my-4 h-[10%] flex items-center bg-slate-200 rounded-[3rem]   w-[75%] mx-auto">
             <div className="border border-primary rounded-full">
-              <img src={Avatar} alt="user-img" width={60} height={60} />
+              <img src={conversationMessages?.reciever?.Avatar} alt="Avatar" width={60} height={60} />
             </div>
             <div className="ml-4 cursor-pointer">
               <p className="font-medium">
@@ -310,7 +309,7 @@ export const Dashboard = () => {
                 key={user?.Email}
               >
                 <div className="border border-primary rounded-full">
-                  <img src={Avatar} alt="user-img" width={60} height={60} />
+                  <img src={user?.Avatar} alt="Avatar" width={60} height={60} />
                 </div>
                 <div className="ml-4">
                   <p className="font-medium">{user?.Name}</p>
