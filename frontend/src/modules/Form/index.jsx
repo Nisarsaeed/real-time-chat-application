@@ -14,6 +14,9 @@ export const Form = ({ isSignInPage }) => {
     Password: "",
   });
 
+  const [profileImg, setProfileImg] = useState(null);
+  console.log(profileImg);
+
   const handleClick = () => {
     const destination = isSignInPage ? "/sign_up" : "/sign_in";
     navigate(destination);
@@ -25,17 +28,22 @@ export const Form = ({ isSignInPage }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const formData = new FormData(); // Create a new FormData object
+    for (const key in data) {
+      formData.append(key, data[key]); // Append each key-value pair from the data object to formData
+    }
+    if (profileImg) {
+      formData.append("profileImg", profileImg); // Append the profile image file to formData if it exists
+    }
+  
     const res = await fetch(
       `http://localhost:8000/api/${isSignInPage ? "login" : "register"}`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+        body: formData, // Send formData as the request body
       }
     );
-
+  
     if (res.status === 400) {
       alert("Invalid Credentials");
     } else {
@@ -82,7 +90,8 @@ export const Form = ({ isSignInPage }) => {
           onChange={(e) => handleInputChange(e, "Password")}
           className="w-full"
         />
-        <Button type="submit" className={""} />
+        <input type="file" accept="image/*" onChange={(e)=>setProfileImg(e.target.files[0])} />
+        <Button type="submit" />
       </form>
       <div className="mt-2">
         {isSignInPage
