@@ -16,6 +16,9 @@ const usersSchema = mongoose.Schema({
     },
     token:{
         type: String,
+    },
+    profileImg:{
+        type: String,
     }
 
 });

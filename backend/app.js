@@ -15,6 +15,7 @@ require("./connection");
 const Users = require("./models/Users");
 const Conversations = require("./models/Conversations");
 const Messages = require("./models/Messages");
+const upload = require('./cloudinary/multerConfig');
 
 const port = process.env.PORT || 8000;
 
@@ -81,31 +82,33 @@ app.get("/", (req, res) => {
   res.send("welcome");
 });
 
-app.post("/api/register", async (req, res, next) => {
+app.post("/api/register", upload.single('profileImg'), async (req, res, next) => {
   try {
     const { Name, Email, Password } = req.body;
+    const profileImg = req.file ? req.file.path : null;
+
     if (!Name || !Email || !Password) {
-      res.status(400).send("Please Fill in the requested fields");
-    } else {
-      const isAlreadyExist = await Users.findOne({ Email });
-      if (isAlreadyExist) {
-        res.status(400).send("User Already Exist");
-      } else {
-        const newUser = new Users({ Name, Email });
-        bcryptjs.hash(Password, 10, (err, hashedPassword) => {
-          newUser.set("Password", hashedPassword);
-          newUser.save();
-          next();
-        });
-        return res.status(200).send("User Registered Successfully");
-      }
-    }
+      return res.status(400).send("Please fill in the requested fields");
+    } 
+
+    const isAlreadyExist = await Users.findOne({ Email });
+    if (isAlreadyExist) {
+     res.status(400).send("User already exists");
+    } 
+    else{
+    const newUser = new Users({ Name, Email, profileImg });
+    bcryptjs.hash(Password, 10, (err, hashedPassword) => {
+      newUser.set("Password", hashedPassword);
+      newUser.save();
+    });
+    return res.status(200).send("User registered successfully");
+  }
   } catch (error) {
     console.log("error:  ", error);
   }
 });
 
-app.post("/api/login", async (req, res, next) => {
+app.post("/api/login",upload.none(), async (req, res, next) => {
   try {
     const { Email, Password } = req.body;
     if (!Email || !Password) {
@@ -140,7 +143,7 @@ app.post("/api/login", async (req, res, next) => {
               return res
                 .status(200)
                 .json({
-                  user: { id: user._id, Email: user.Email, Name: user.Name },
+                  user: { id: user._id, Email: user.Email, Name: user.Name, Avatar: user.profileImg },
                   token: token,
                 });
             }
@@ -179,7 +182,7 @@ app.get("/api/conversation/:userId", async (req, res) => {
         );
         const user = await Users.findById(recieverId);
         return {
-          user: { recieverId: user._id, Email: user.Email, Name: user.Name },
+          user: { recieverId: user._id, Email: user.Email, Name: user.Name, Avatar: user.profileImg },
           conversationId: conversation._id,
         };
       })
@@ -213,7 +216,6 @@ app.post("/api/message", async (req, res) => {
     }
     const newMessage = new Messages({ conversationId, senderId, message });
     await newMessage.save();
-    res.status(200).send("Message sent successfully");
   } catch (error) {
     console.log("Error ", error);
   }
@@ -245,7 +247,7 @@ app.get("/api/users", async (req, res) => {
     const usersData = Promise.all(
       users.map(async (user) => {
         return {
-          user: { Email: user.Email, Name: user.Name, recieverId: user._id },
+          user: { Email: user.Email, Name: user.Name, recieverId: user._id, Avatar: user.profileImg },
         };
       })
     );
