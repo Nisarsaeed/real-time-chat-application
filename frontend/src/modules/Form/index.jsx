@@ -61,7 +61,7 @@ export const Form = ({ isSignInPage }) => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col justify-center items-center">
+    <div className="w-full h-[100vh] flex flex-col justify-center items-center">
       <div className="text-4xl font-extrabold my-3">
         Welcome {isSignInPage && "Back"}
       </div>
@@ -94,7 +94,7 @@ export const Form = ({ isSignInPage }) => {
           onChange={(e) => handleInputChange(e, "Password")}
           className="w-full"
         />
-        <input type="file" accept="image/*" onChange={(e)=>setProfileImg(e.target.files[0])} className={isSignInPage ? "hidden" : "w-full"}/>
+        <input type="file" accept="image/*" onChange={(e)=>setProfileImg(e.target.files[0])} className={isSignInPage ? "hidden" : "w-1/2 my-4 "}/>
         <Button type="submit" />
       </form>
       <div className="mt-2">
