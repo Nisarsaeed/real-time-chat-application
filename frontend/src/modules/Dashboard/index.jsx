@@ -45,7 +45,7 @@ export const Dashboard = () => {
   const fetchConversations = useCallback(async () => {
     try {
       const res = await fetch(
-        `http://localhost:8000/api/conversation/${userDetail.id}`,
+        `http://localhost:8000/api/conversation/${userDetail?.id}`,
         {
           method: "GET",
           headers: {
@@ -63,7 +63,7 @@ export const Dashboard = () => {
     } catch (error) {
       console.error("Error fetching conversations:", error);
     }
-  }, [userDetail.id]);
+  }, [userDetail?.id]);
 
   useEffect(() => {
     fetchConversations();
@@ -86,14 +86,14 @@ export const Dashboard = () => {
         const allFetchedUsers = await res.json();
 
         const filteredLoggedInUser = allFetchedUsers.filter(
-          (user) => user.user.recieverId !== userDetail.id
+          (user) => user.user.recieverId !== userDetail?.id
         );
 
         const filteredUsersAlreadyHavingConversation =
           filteredLoggedInUser.filter((user) => {
             return !conversations.some(
               (conversation) =>
-                conversation.user.recieverId === user.user.recieverId
+                conversation.user.recieverId === user?.user?.recieverId
             );
           });
 

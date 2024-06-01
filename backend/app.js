@@ -182,7 +182,7 @@ app.get("/api/conversation/:userId", async (req, res) => {
         );
         const user = await Users.findById(recieverId);
         return {
-          user: { recieverId: user._id, Email: user.Email, Name: user.Name, Avatar: user.profileImg },
+          user: { recieverId: user?._id, Email: user?.Email, Name: user?.Name, Avatar: user?.profileImg },
           conversationId: conversation._id,
         };
       })
