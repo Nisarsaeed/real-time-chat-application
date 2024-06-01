@@ -177,8 +177,8 @@ export const Dashboard = () => {
     <div className="w-full h-screen flex  ">
       <div className="w-[25%] border h-full bg-Light ">
         <div className="flex  items-center justify-center w-full h-[20%]  border-b-2 border-slate-300">
-          <div className="border border-primary rounded-full">
-            <img src={userDetail?.Avatar} alt="Avatar" width={75} height={75} />
+          <div className="rounded-full overflow-hidden w-20 h-20 flex items-center justify-center">
+            <img src={userDetail?.Avatar} alt="Avatar" className="w-full h-full object-cover" />
           </div>
           <div className="flex flex-col ml-3">
             <div className="text-lg font-medium">{userDetail?.Name}</div>
@@ -197,9 +197,9 @@ export const Dashboard = () => {
                   }
                   key={conversationId}
                 >
-                  <div className="border border-primary rounded-full">
-                    <img src={user?.Avatar} alt="Avatar" width={60} height={60} />
-                  </div>
+                <div className="rounded-full overflow-hidden w-16 h-16 flex items-center justify-center">
+                  <img src={user?.Avatar} alt="Avatar" className="w-full h-full object-cover" />
+                </div>
                   <div className="ml-4">
                     <p className="font-medium">{user?.Name}</p>
                     <p className="font-mute">{user?.Email}</p>
@@ -217,8 +217,8 @@ export const Dashboard = () => {
       {conversationMessages?.reciever?.Name ? (
         <div className="w-[50%] border h-full relative">
           <div className="py-4 px-6 my-4 h-[10%] flex items-center bg-slate-200 rounded-[3rem]   w-[75%] mx-auto">
-            <div className="border border-primary rounded-full">
-              <img src={conversationMessages?.reciever?.Avatar} alt="Avatar" width={60} height={60} />
+            <div className="rounded-full overflow-hidden w-16 h-16 flex items-center justify-center">
+              <img src={conversationMessages?.reciever?.Avatar} alt="Avatar" className="w-full h-full object-cover" />
             </div>
             <div className="ml-4 cursor-pointer">
               <p className="font-medium">
@@ -298,8 +298,8 @@ export const Dashboard = () => {
                 onClick={() => fetchConversationMessages("new", user)}
                 key={user?.Email}
               >
-                <div className="border border-primary rounded-full">
-                  <img src={user?.Avatar} alt="Avatar" width={60} height={60} />
+                <div className="rounded-full overflow-hidden w-16 h-16 flex items-center justify-center">
+                  <img src={user?.Avatar} alt="Avatar" className="w-full h-full object-cover" />
                 </div>
                 <div className="ml-4">
                   <p className="font-medium">{user?.Name}</p>
