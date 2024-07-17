@@ -74,15 +74,12 @@ This is an example of how to list things you need to use the software and how to
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/github_username/repo_name.git
+   git clone https://github.com/Nisarsaeed/real-time-chat-application.git
    ```
 2. Install NPM packages
    ```sh
    npm install
    ```
-3. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -114,7 +111,7 @@ The resources used in this project are referenced below:
 [linkedin-url]: https://linkedin.com/in/nisar-saeed
 [React-sheild]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
 [Express-sheild]: https://img.shields.io/badge/-Express.js-35495E?style=for-the-badge&logo=express&logoColor=yellow
-[Node-sheild]:[https://img.shields.io/badge/-Node.js-black?style=for-the-badge&logo=node.js&logoColor=339933]
+[Node-sheild]:https://img.shields.io/badge/-Node.js-black?style=for-the-badge&logo=node.js&logoColor=339933
 [cloudinary-sheild]:https://img.shields.io/badge/-Cloudinary-blue?style=for-the-badge&logo=cloudinary&logoColor=white
 [Mongodb-sheild]: https://img.shields.io/badge/-MongoDB-35495E?style=for-the-badge&logo=mongodb&logoColor=47A248
 [Socket-sheild]:https://img.shields.io/badge/-Socket.io-4A4A55?style=for-the-badge&logo=socketdotio&logoColor=010101
