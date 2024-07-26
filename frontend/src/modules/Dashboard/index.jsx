@@ -147,7 +147,8 @@ export const Dashboard = () => {
         message: messages,
         conversationId: conversationMessages?.conversationId,
       });
-
+      
+      setMessages("");
       const res = await fetch(`http://localhost:8000/api/message`, {
         method: "POST",
         headers: {
@@ -164,7 +165,6 @@ export const Dashboard = () => {
       if (!res.ok) {
         throw new Error("Failed to send new message");
       }
-      setMessages("");
       if (conversationMessages?.conversationId === "new") {
         fetchConversations();
       }
