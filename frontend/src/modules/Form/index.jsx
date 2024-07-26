@@ -28,8 +28,8 @@ export const Form = ({ isSignInPage }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    //if user switches from signup and tries to register the profile img should be able to give error
-    if(!isSignInPage){
+    //if user switches from signup and tries to login the profile img should be able to give error
+    if(isSignInPage){
       setProfileImg(null);
     }
     const formData = new FormData(); // Create a new FormData object
