@@ -6,8 +6,11 @@ import {
   faPlusCircle,
   faMicrophone,
   faPhone,
+  faArrowRightFromBracket
 } from "@fortawesome/free-solid-svg-icons";
 import { io } from "socket.io-client";
+import { Button } from "../../components/Button";
+import { useNavigate } from "react-router-dom";
 
 export const Dashboard = () => {
   const [userDetail, setUserDetail] = useState(
@@ -19,6 +22,7 @@ export const Dashboard = () => {
   const [allUsers, setAllUsers] = useState([]);
   const [socket, setSocket] = useState(null);
   const messageRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setSocket(io("http://localhost:8080"));
@@ -175,10 +179,14 @@ export const Dashboard = () => {
 
   return (
     <div className="w-full h-screen flex  ">
-      <div className="w-[25%] border h-full bg-Light ">
+      <div className="w-[25%] border h-full bg-Light relative ">
         <div className="flex  items-center justify-center w-full h-[20%]  border-b-2 border-slate-300">
           <div className="rounded-full overflow-hidden w-20 h-20 flex items-center justify-center">
-            <img src={userDetail?.Avatar} alt="Avatar" className="w-full h-full object-cover" />
+            <img
+              src={userDetail?.Avatar}
+              alt="Avatar"
+              className="w-full h-full object-cover"
+            />
           </div>
           <div className="flex flex-col ml-3">
             <div className="text-lg font-medium">{userDetail?.Name}</div>
@@ -197,9 +205,13 @@ export const Dashboard = () => {
                   }
                   key={conversationId}
                 >
-                <div className="rounded-full overflow-hidden w-16 h-16 flex items-center justify-center">
-                  <img src={user?.Avatar} alt="Avatar" className="w-full h-full object-cover" />
-                </div>
+                  <div className="rounded-full overflow-hidden w-16 h-16 flex items-center justify-center">
+                    <img
+                      src={user?.Avatar}
+                      alt="Avatar"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                   <div className="ml-4">
                     <p className="font-medium">{user?.Name}</p>
                     <p className="font-mute">{user?.Email}</p>
@@ -213,12 +225,32 @@ export const Dashboard = () => {
             )}
           </div>
         </div>
+        <div className="absolute bottom-6 w-full px-6">
+          <Button
+            title="Logout"
+            className="text-white bg-gradient-to-br from-primary to-primary-light hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-bold rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+            onClick={() => {
+              localStorage.removeItem("user:detail", "user:token");
+              navigate("/sign_in");
+            }}
+            icon={
+              <FontAwesomeIcon
+                icon={faArrowRightFromBracket}
+                className="cursor-pointer ml-2 "
+              />
+            }
+          />
+        </div>
       </div>
       {conversationMessages?.reciever?.Name ? (
         <div className="w-[50%] border h-full relative">
           <div className="py-4 px-6 my-4 h-[10%] flex items-center bg-slate-200 rounded-[3rem]   w-[75%] mx-auto">
             <div className="rounded-full overflow-hidden w-16 h-16 flex items-center justify-center">
-              <img src={conversationMessages?.reciever?.Avatar} alt="Avatar" className="w-full h-full object-cover" />
+              <img
+                src={conversationMessages?.reciever?.Avatar}
+                alt="Avatar"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="ml-4 cursor-pointer">
               <p className="font-medium">
@@ -299,7 +331,11 @@ export const Dashboard = () => {
                 key={user?.Email}
               >
                 <div className="rounded-full overflow-hidden w-16 h-16 flex items-center justify-center">
-                  <img src={user?.Avatar} alt="Avatar" className="w-full h-full object-cover" />
+                  <img
+                    src={user?.Avatar}
+                    alt="Avatar"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div className="ml-4">
                   <p className="font-medium">{user?.Name}</p>
