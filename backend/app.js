@@ -82,7 +82,7 @@ app.get("/", (req, res) => {
   res.send("welcome");
 });
 
-app.post("/api/register", upload.single('profileImg'), async (req, res, next) => {
+app.post("/api/register", upload.single('profileImg'), async (req, res) => {
   try {
     const { Name, Email, Password } = req.body;
     const profileImg = req.file ? req.file.path : null;
