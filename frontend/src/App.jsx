@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Form } from './modules/Form';
 import { Dashboard } from './modules/Dashboard';
+import PropTypes from 'prop-types'
 import './App.css';
 
 const ProtectedRoute = ({ children }) => {
@@ -16,6 +17,10 @@ const ProtectedRoute = ({ children }) => {
   // }
 
   return children;
+}
+
+ProtectedRoute.propTypes = {
+  children : PropTypes.any
 }
 
 function App() {
