@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { useNavigate } from "react-router-dom";
+import PropTypes from 'prop-types'
 
 export const Form = ({ isSignInPage }) => {
   const navigate = useNavigate();
@@ -28,15 +29,16 @@ export const Form = ({ isSignInPage }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    //if user switches from signup and tries to login the profile img should be able to give error
-    if(isSignInPage){
-      setProfileImg(null);
-    }
+     //if user switches from signup and tries to login the profile img should not be able to give error
+     if(isSignInPage){
+       setProfileImg(null);
+      }
     const formData = new FormData(); // Create a new FormData object
     for (const key in data) {
       formData.append(key, data[key]); // Append each key-value pair from the data object to formData
     }
-    if (profileImg) {
+    //only upload image on sign up page
+    if (!isSignInPage && profileImg) {
       formData.append("profileImg", profileImg); // Append the profile image file to formData if it exists
     }
   
@@ -110,4 +112,8 @@ export const Form = ({ isSignInPage }) => {
       </div>
     </div>
   );
-};
+}
+
+Form.propTypes = {
+  isSignInPage: PropTypes.bool.isRequired
+}
