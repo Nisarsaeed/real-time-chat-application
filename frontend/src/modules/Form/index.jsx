@@ -95,7 +95,7 @@ export const Form = ({ isSignInPage }) => {
           className="w-full"
         />
         <input type="file" accept="image/*" onChange={(e)=>setProfileImg(e.target.files[0])} className={isSignInPage ? "hidden" : "w-1/2 my-4 "}/>
-        <Button type="submit" />
+        <Button type="submit" title={isSignInPage?"Sign In":"Sign Up"} />
       </form>
       <div className="mt-2">
         {isSignInPage
