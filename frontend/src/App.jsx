@@ -5,17 +5,19 @@ import PropTypes from 'prop-types'
 import './App.css';
 
 const ProtectedRoute = ({ children }) => {
-
-  const isLoggedIn = true;
+  let isLoggedIn = false;
   const location = useLocation();
 
-  // if (!isLoggedIn && location.pathname !== '/sign_in' && location.pathname !== '/sign_up') {
-  //   return <Navigate to={'/sign_in'} />;
-  // }
-  // else if (isLoggedIn && (location.pathname === '/sign_in' || location.pathname === '/sign_up')) {
-  //   return <Navigate to={'/'} />;
-  // }
+  if (localStorage.length>=2) {
+    isLoggedIn=true;
+  }
 
+  if (!isLoggedIn && location.pathname !== '/sign_in' && location.pathname !== '/sign_up') {
+    return <Navigate to={'/sign_in'} />;
+  }
+  else if (isLoggedIn && (location.pathname === '/sign_in' || location.pathname === '/sign_up')) {
+    return <Navigate to={'/'} />;
+  }
   return children;
 }
 
