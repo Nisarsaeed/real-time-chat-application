@@ -145,6 +145,10 @@ export const Dashboard = () => {
 
   const sendNewMessage = async () => {
     try {
+      if(messages.trim()===''){
+        alert('empty message cannot be send');
+        return;
+      }
       socket?.emit("sendMessage", {
         senderId: userDetail?.id,
         recieverId: conversationMessages?.reciever?.recieverId,
@@ -230,7 +234,8 @@ export const Dashboard = () => {
             title="Logout"
             className="text-white bg-gradient-to-br from-primary to-primary-light hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-bold rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
             onClick={() => {
-              localStorage.removeItem("user:detail", "user:token");
+              localStorage.removeItem("user:detail");
+              localStorage.removeItem("user:token");
               navigate("/sign_in");
             }}
             icon={
