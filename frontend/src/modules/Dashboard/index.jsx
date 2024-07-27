@@ -6,11 +6,8 @@ import {
   faPlusCircle,
   faMicrophone,
   faPhone,
-  faArrowRightFromBracket
 } from "@fortawesome/free-solid-svg-icons";
 import { io } from "socket.io-client";
-import { Button } from "../../components/Button";
-import { useNavigate } from "react-router-dom";
 import { Sidebar } from "../Sidebar";
 
 export const Dashboard = () => {
@@ -23,7 +20,6 @@ export const Dashboard = () => {
   const [allUsers, setAllUsers] = useState([]);
   const [socket, setSocket] = useState(null);
   const messageRef = useRef(null);
-  const navigate = useNavigate();
   const [activeTab,setActiveTab] = useState('chats');
 
   useEffect(() => {
@@ -328,23 +324,8 @@ export const Dashboard = () => {
         </div>
       )}
       { activeTab==='add-users' &&
-        <div className="h-full w-[40%] border relative order-first bg-Light">
+        <div className="h-full w-[40%] border order-first bg-Light">
         <div className="my-8 text-lg font-bold ml-6">Add New Users</div>
-        <Button
-            title=""
-            className="text-white absolute top-2 right-2 bg-gradient-to-br from-primary to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-bold rounded-lg text-lg  text-center w-12"
-            onClick={() => {
-              localStorage.removeItem("user:detail");
-              localStorage.removeItem("user:token");
-              navigate("/sign_in");
-            }}
-            icon={
-              <FontAwesomeIcon
-                icon={faArrowRightFromBracket}
-                className="cursor-pointer mx-auto"
-              />
-            }
-          />
         <div className="overflow-y-scroll h-[85%] px-6">
           {allUsers.length > 0 ? (
             allUsers.map(({ user }) => (
