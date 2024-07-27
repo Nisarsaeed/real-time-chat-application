@@ -11,6 +11,7 @@ import {
 import { io } from "socket.io-client";
 import { Button } from "../../components/Button";
 import { useNavigate } from "react-router-dom";
+import { Sidebar } from "../Sidebar";
 
 export const Dashboard = () => {
   const [userDetail, setUserDetail] = useState(
@@ -23,6 +24,7 @@ export const Dashboard = () => {
   const [socket, setSocket] = useState(null);
   const messageRef = useRef(null);
   const navigate = useNavigate();
+  const [activeTab,setActiveTab] = useState('chats');
 
   useEffect(() => {
     setSocket(io("http://localhost:8080"));
@@ -191,10 +193,16 @@ export const Dashboard = () => {
       console.error("Error sending message:", error);
     }
   };
+
+  const handleTabChange =(option)=>{
+    setActiveTab(option);
+  }
   
   return (
-    <div className="w-full h-screen flex  ">
-      <div className="w-[25%] border h-full bg-Light ">
+    <div className="w-full h-screen flex ">
+      <Sidebar onTabChange={handleTabChange}/>
+      { activeTab==='chats' &&
+        <div className="w-[40%] border h-full bg-Light">
         <div className="flex  items-center justify-center w-full h-[20%]  border-b-2 border-slate-300">
           <div className="rounded-full overflow-hidden w-20 h-20 flex items-center justify-center">
             <img
@@ -214,7 +222,7 @@ export const Dashboard = () => {
             {conversations.length > 0 ? (
               conversations.map(({ conversationId, user }) => (
                 <div
-                  className="p-4 my-4 flex itemscenter hover:bg-slate-200 border-b-2 hover:rounded-lg  cursor-pointer"
+                  className="p-4 my-4 flex itemscenter hover:bg-slate-300 border-b-2 hover:rounded-lg  cursor-pointer"
                   onClick={() =>
                     fetchConversationMessages(conversationId, user)
                   }
@@ -240,9 +248,9 @@ export const Dashboard = () => {
             )}
           </div>
         </div>
-      </div>
+      </div>}
       {conversationMessages?.reciever?.Name ? (
-        <div className="w-[50%] border h-full relative">
+        <div className="w-[60%] border h-full relative">
           <div className="py-4 px-6 my-4 h-[10%] flex items-center bg-slate-200 rounded-[3rem]   w-[75%] mx-auto">
             <div className="rounded-full overflow-hidden w-16 h-16 flex items-center justify-center">
               <img
@@ -274,7 +282,7 @@ export const Dashboard = () => {
                           className={`max-w-[40%]  min-h-[80px] rounded-xl  p-4 my-3  break-all ${
                             id === userDetail?.id
                               ? "bg-primary ml-auto rounded-tr-none text-white"
-                              : "bg-slate-300 rounded-tl-none"
+                              : "bg-slate-400 rounded-tl-none"
                           }`}
                         >
                           {message}
@@ -285,7 +293,7 @@ export const Dashboard = () => {
                   }
                 )
               ) : (
-                <div className="mt-[5rem] text-lg font-semibold text-center">
+                <div className="mt-[5rem] text-lg font-semibold text-center w-[60%]">
                   No Messages
                 </div>
               )}
@@ -319,7 +327,8 @@ export const Dashboard = () => {
           No Conversation Selected
         </div>
       )}
-      <div className="h-full w-[25%] border relative">
+      { activeTab==='add-users' &&
+        <div className="h-full w-[40%] border relative order-first bg-Light">
         <div className="my-8 text-lg font-bold ml-6">Add New Users</div>
         <Button
             title=""
@@ -340,7 +349,7 @@ export const Dashboard = () => {
           {allUsers.length > 0 ? (
             allUsers.map(({ user }) => (
               <div
-                className="p-4 my-4 flex itemscenter hover:bg-slate-200 border-b-2 hover:rounded-lg  cursor-pointer"
+                className="p-4 my-4 flex itemscenter hover:bg-slate-300 border-b-2 hover:rounded-lg  cursor-pointer"
                 onClick={() => fetchConversationMessages('new',user)}
                 key={user?.Email}
               >
@@ -363,7 +372,7 @@ export const Dashboard = () => {
             </div>
           )}
         </div>
-      </div>
+      </div>}
     </div>
   );
 };
