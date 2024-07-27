@@ -194,7 +194,7 @@ export const Dashboard = () => {
   
   return (
     <div className="w-full h-screen flex  ">
-      <div className="w-[25%] border h-full bg-Light relative ">
+      <div className="w-[25%] border h-full bg-Light ">
         <div className="flex  items-center justify-center w-full h-[20%]  border-b-2 border-slate-300">
           <div className="rounded-full overflow-hidden w-20 h-20 flex items-center justify-center">
             <img
@@ -239,23 +239,6 @@ export const Dashboard = () => {
               </div>
             )}
           </div>
-        </div>
-        <div className="absolute bottom-6 w-full px-6">
-          <Button
-            title="Logout"
-            className="text-white bg-gradient-to-br from-primary to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-bold rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
-            onClick={() => {
-              localStorage.removeItem("user:detail");
-              localStorage.removeItem("user:token");
-              navigate("/sign_in");
-            }}
-            icon={
-              <FontAwesomeIcon
-                icon={faArrowRightFromBracket}
-                className="cursor-pointer ml-2 "
-              />
-            }
-          />
         </div>
       </div>
       {conversationMessages?.reciever?.Name ? (
@@ -336,8 +319,23 @@ export const Dashboard = () => {
           No Conversation Selected
         </div>
       )}
-      <div className="h-full w-[25%] border">
+      <div className="h-full w-[25%] border relative">
         <div className="my-8 text-lg font-bold ml-6">Add New Users</div>
+        <Button
+            title=""
+            className="text-white absolute top-2 right-2 bg-gradient-to-br from-primary to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-bold rounded-lg text-lg  text-center w-12"
+            onClick={() => {
+              localStorage.removeItem("user:detail");
+              localStorage.removeItem("user:token");
+              navigate("/sign_in");
+            }}
+            icon={
+              <FontAwesomeIcon
+                icon={faArrowRightFromBracket}
+                className="cursor-pointer mx-auto"
+              />
+            }
+          />
         <div className="overflow-y-scroll h-[85%] px-6">
           {allUsers.length > 0 ? (
             allUsers.map(({ user }) => (
