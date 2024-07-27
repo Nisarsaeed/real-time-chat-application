@@ -64,6 +64,7 @@ export const Dashboard = () => {
 
       const resData = await res.json();
       setConversations(resData);
+      return resData;
     } catch (error) {
       console.error("Error fetching conversations:", error);
     }
@@ -145,8 +146,8 @@ export const Dashboard = () => {
 
   const sendNewMessage = async () => {
     try {
-      if(messages.trim()===''){
-        alert('empty message cannot be send');
+      if (messages.trim() === '') {
+        alert('Empty message cannot be sent');
         return;
       }
       socket?.emit("sendMessage", {
@@ -155,9 +156,10 @@ export const Dashboard = () => {
         message: messages,
         conversationId: conversationMessages?.conversationId,
       });
-      
+  
       setMessages("");
-      const res = await fetch(`http://localhost:8000/api/message`, {
+  
+      const res = await fetch("http://localhost:8000/api/message", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -169,18 +171,27 @@ export const Dashboard = () => {
           recieverId: conversationMessages?.reciever?.recieverId,
         }),
       });
-
+  
       if (!res.ok) {
         throw new Error("Failed to send new message");
       }
+  
       if (conversationMessages?.conversationId === "new") {
-        fetchConversations();
+        const updatedConversations = await fetchConversations();
+        const userId = conversationMessages?.reciever?.recieverId;
+        const newConversationId = updatedConversations.find(
+          convo => convo.user.recieverId === userId
+        )?.conversationId || null;
+        const recieverDetails = updatedConversations.find(
+          convo => convo.user.recieverId === userId
+        )?.user || null;
+        await fetchConversationMessages(newConversationId, recieverDetails);
       }
     } catch (error) {
       console.error("Error sending message:", error);
     }
   };
-
+  
   return (
     <div className="w-full h-screen flex  ">
       <div className="w-[25%] border h-full bg-Light relative ">
@@ -232,7 +243,7 @@ export const Dashboard = () => {
         <div className="absolute bottom-6 w-full px-6">
           <Button
             title="Logout"
-            className="text-white bg-gradient-to-br from-primary to-primary-light hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-bold rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+            className="text-white bg-gradient-to-br from-primary to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-bold rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
             onClick={() => {
               localStorage.removeItem("user:detail");
               localStorage.removeItem("user:token");
@@ -332,7 +343,7 @@ export const Dashboard = () => {
             allUsers.map(({ user }) => (
               <div
                 className="p-4 my-4 flex itemscenter hover:bg-slate-200 border-b-2 hover:rounded-lg  cursor-pointer"
-                onClick={() => fetchConversationMessages("new", user)}
+                onClick={() => fetchConversationMessages('new',user)}
                 key={user?.Email}
               >
                 <div className="rounded-full overflow-hidden w-16 h-16 flex items-center justify-center">
