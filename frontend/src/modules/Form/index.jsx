@@ -71,7 +71,7 @@ export const Form = ({ isSignInPage }) => {
         {isSignInPage ? "Sign In to your account" : "Sign Up to get Started"}
       </div>
       <form
-        className="w-1/4 flex flex-col items-center"
+        className="w-3/4 md:w-1/2 lg:w-1/4 flex flex-col items-center"
         onSubmit={(e) => handleSubmit(e)}
       >
         <Input
@@ -99,7 +99,7 @@ export const Form = ({ isSignInPage }) => {
         <input type="file" accept="image/*" onChange={(e)=>setProfileImg(e.target.files[0])} className={isSignInPage ? "hidden" : "w-1/2 my-4 "}/>
         <Button type="submit" title={isSignInPage?"Sign In":"Sign Up"} />
       </form>
-      <div className="mt-2">
+      <div className="mt-2 text-lg">
         {isSignInPage
           ? "Didn't have an account? "
           : "Already have an account? "}
