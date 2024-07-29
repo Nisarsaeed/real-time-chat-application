@@ -269,8 +269,8 @@ export const Dashboard = () => {
           isMobile &&
           activeTab === "messages")) && (
         <div className="w-full md:w-[60%] border h-full relative">
-          <div className="py-4 px-6 my-4 h-[10%] flex items-center bg-slate-200 rounded-[3rem]   w-[75%] mx-auto">
-            <div className="rounded-full overflow-hidden w-16 h-16 flex items-center justify-center">
+          <div className="py-4 px-4 md:px-6 my-4 h-[10%] flex items-center bg-slate-200 rounded-[3rem]  w-[75%] mx-auto">
+            <div className="rounded-full overflow-hidden w-12 h-12 md:w-16 md:h-16 flex items-center justify-center">
               <img
                 src={conversationMessages?.reciever?.Avatar}
                 alt="Avatar"
@@ -297,7 +297,7 @@ export const Dashboard = () => {
                       <>
                         <div
                           key={index}
-                          className={`max-w-[40%]  min-h-[80px] rounded-xl  p-4 my-3  break-all ${
+                          className={`max-w-[50%] min-h-[60px] md:max-w-[40%]  md:min-h-[80px] rounded-xl  p-4 my-3  break-all ${
                             id === userDetail?.id
                               ? "bg-primary ml-auto rounded-tr-none text-white"
                               : "bg-slate-300 rounded-tl-none"
@@ -320,23 +320,23 @@ export const Dashboard = () => {
           <div className="bg-gray-50 absolute bottom-0 w-full">
             <FontAwesomeIcon
               icon={faPlusCircle}
-              className="mx-6 h-5 cursor-pointer"
+              className="mx-3 lg:mx-6 h-5 cursor-pointer"
             />
             <Input
               type="text"
               placeholder="Type a message"
-              className="w-[80%] focus:outline-none rounded-none bg-transparent border-none"
+              className="w-[60%] md:w-[80%] focus:outline-none rounded-none bg-transparent border-none"
               value={messages}
               onChange={(e) => setMessages(e.target.value)}
             />
             <FontAwesomeIcon
               icon={faPaperPlane}
-              className="ml-6 h-5 cursor-pointer"
+              className="ml-3 lg:ml-6 h-5 cursor-pointer"
               onClick={() => sendNewMessage()}
             />
             <FontAwesomeIcon
               icon={faMicrophone}
-              className="ml-6 h-5 cursor-pointer"
+              className="ml-3 lg:ml-6 h-5 cursor-pointer"
             />
           </div>
         </div>
