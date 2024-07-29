@@ -20,10 +20,25 @@ export const Dashboard = () => {
   const [allUsers, setAllUsers] = useState([]);
   const [socket, setSocket] = useState(null);
   const messageRef = useRef(null);
-  const [activeTab,setActiveTab] = useState('chats');
+  const [activeTab, setActiveTab] = useState("chats");
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
-    setSocket(io("http://localhost:8080"));
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    const newSocket = io("http://localhost:8080");
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.close();
+    };
   }, []);
 
   useEffect(() => {
@@ -137,6 +152,9 @@ export const Dashboard = () => {
         reciever: user,
         conversationId: conversationId,
       });
+      if (isMobile) {
+        handleTabChange("messages");
+      }
     } catch (error) {
       console.error("Error fetching messages:", error);
     }
@@ -144,8 +162,8 @@ export const Dashboard = () => {
 
   const sendNewMessage = async () => {
     try {
-      if (messages.trim() === '') {
-        alert('Empty message cannot be sent');
+      if (messages.trim() === "") {
+        alert("Empty message cannot be sent");
         return;
       }
       socket?.emit("sendMessage", {
@@ -154,9 +172,9 @@ export const Dashboard = () => {
         message: messages,
         conversationId: conversationMessages?.conversationId,
       });
-  
+
       setMessages("");
-  
+
       const res = await fetch("http://localhost:8000/api/message", {
         method: "POST",
         headers: {
@@ -169,20 +187,20 @@ export const Dashboard = () => {
           recieverId: conversationMessages?.reciever?.recieverId,
         }),
       });
-  
+
       if (!res.ok) {
         throw new Error("Failed to send new message");
       }
-  
+
       if (conversationMessages?.conversationId === "new") {
         const updatedConversations = await fetchConversations();
         const userId = conversationMessages?.reciever?.recieverId;
-        const newConversationId = updatedConversations.find(
-          convo => convo.user.recieverId === userId
-        )?.conversationId || null;
-        const recieverDetails = updatedConversations.find(
-          convo => convo.user.recieverId === userId
-        )?.user || null;
+        const newConversationId =
+          updatedConversations.find((convo) => convo.user.recieverId === userId)
+            ?.conversationId || null;
+        const recieverDetails =
+          updatedConversations.find((convo) => convo.user.recieverId === userId)
+            ?.user || null;
         await fetchConversationMessages(newConversationId, recieverDetails);
       }
     } catch (error) {
@@ -190,63 +208,67 @@ export const Dashboard = () => {
     }
   };
 
-  const handleTabChange =(option)=>{
+  const handleTabChange = (option) => {
     setActiveTab(option);
-  }
-  
+  };
+
   return (
-    <div className="w-full h-screen flex ">
-      <Sidebar onTabChange={handleTabChange}/>
-      { activeTab==='chats' &&
-        <div className="w-[40%] border h-full bg-Light">
-        <div className="flex  items-center justify-center w-full h-[20%]  border-b-2 border-slate-300">
-          <div className="rounded-full overflow-hidden w-20 h-20 flex items-center justify-center">
-            <img
-              src={userDetail?.Avatar}
-              alt="Avatar"
-              className="w-full h-full object-cover"
-            />
+    <div className="w-full h-screen flex !overflow-x-hidden">
+      <Sidebar onTabChange={handleTabChange} />
+      {activeTab === "chats" && (
+        <div className="w-full md:w-[40%] border h-full bg-Light">
+          <div className="flex items-center justify-center w-full h-[20%] border-b-2 border-slate-300">
+            <div className="rounded-full overflow-hidden w-20 h-20 flex items-center justify-center">
+              <img
+                src={userDetail?.Avatar}
+                alt="Avatar"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="flex flex-col ml-3">
+              <div className="text-lg font-medium">{userDetail?.Name}</div>
+              <div>My Account</div>
+            </div>
           </div>
-          <div className="flex flex-col ml-3">
-            <div className="text-lg font-medium">{userDetail?.Name}</div>
-            <div className="">My Account</div>
-          </div>
-        </div>
-        <div className="h-[80%] px-6 overflow-y-scroll">
-          <div className="text-primary mt-4 font-bold text-xl">Chats</div>
-          <div className="">
-            {conversations.length > 0 ? (
-              conversations.map(({ conversationId, user }) => (
-                <div
-                  className="p-4 my-4 flex itemscenter hover:bg-slate-300 border-b-2 hover:rounded-lg  cursor-pointer"
-                  onClick={() =>
-                    fetchConversationMessages(conversationId, user)
-                  }
-                  key={conversationId}
-                >
-                  <div className="rounded-full overflow-hidden w-16 h-16 flex items-center justify-center">
-                    <img
-                      src={user?.Avatar}
-                      alt="Avatar"
-                      className="w-full h-full object-cover"
-                    />
+          <div className="h-[80%] px-6 overflow-y-scroll">
+            <div className="text-primary mt-4 font-bold text-xl">Chats</div>
+            <div>
+              {conversations.length > 0 ? (
+                conversations.map(({ conversationId, user }) => (
+                  <div
+                    className="p-4 my-4 flex items-center hover:bg-slate-300 border-b-2 hover:rounded-lg cursor-pointer"
+                    onClick={() =>
+                      fetchConversationMessages(conversationId, user)
+                    }
+                    key={conversationId}
+                  >
+                    <div className="rounded-full overflow-hidden w-16 h-16 flex items-center justify-center">
+                      <img
+                        src={user?.Avatar}
+                        alt="Avatar"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="ml-4">
+                      <p className="font-medium">{user?.Name}</p>
+                      <p className="font-mute">{user?.Email}</p>
+                    </div>
                   </div>
-                  <div className="ml-4">
-                    <p className="font-medium">{user?.Name}</p>
-                    <p className="font-mute">{user?.Email}</p>
-                  </div>
+                ))
+              ) : (
+                <div className="mt-[5rem] font-semibold text-center text-lg">
+                  No Conversation
                 </div>
-              ))
-            ) : (
-              <div className="mt-[5rem] font-semibold text-center text-lg ">
-                No Conversation
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
-      </div>}
-      {conversationMessages?.reciever?.Name ? (
-        <div className="w-[60%] border h-full relative">
+      )}
+      {((conversationMessages?.reciever?.Name && !isMobile) ||
+        (conversationMessages?.reciever?.Name &&
+          isMobile &&
+          activeTab === "messages")) && (
+        <div className="w-full md:w-[60%] border h-full relative">
           <div className="py-4 px-6 my-4 h-[10%] flex items-center bg-slate-200 rounded-[3rem]   w-[75%] mx-auto">
             <div className="rounded-full overflow-hidden w-16 h-16 flex items-center justify-center">
               <img
@@ -278,7 +300,7 @@ export const Dashboard = () => {
                           className={`max-w-[40%]  min-h-[80px] rounded-xl  p-4 my-3  break-all ${
                             id === userDetail?.id
                               ? "bg-primary ml-auto rounded-tr-none text-white"
-                              : "bg-slate-400 rounded-tl-none"
+                              : "bg-slate-300 rounded-tl-none"
                           }`}
                         >
                           {message}
@@ -289,7 +311,7 @@ export const Dashboard = () => {
                   }
                 )
               ) : (
-                <div className="mt-[5rem] text-lg font-semibold text-center w-[60%]">
+                <div className="mt-[5rem] text-lg font-semibold text-center">
                   No Messages
                 </div>
               )}
@@ -318,42 +340,46 @@ export const Dashboard = () => {
             />
           </div>
         </div>
-      ) : (
-        <div className="mt-[5rem] text-lg font-semibold text-center w-[50%]">
+      )}
+      {!conversationMessages?.reciever?.Name && !isMobile && (
+        <div className="mt-[5rem] text-lg font-semibold text-center w-[60%]">
           No Conversation Selected
         </div>
       )}
-      { activeTab==='add-users' &&
-        <div className="h-full w-[40%] border order-first bg-Light">
-        <div className="my-8 text-lg font-bold ml-6">Add New Users</div>
-        <div className="overflow-y-scroll h-[85%] px-6">
-          {allUsers.length > 0 ? (
-            allUsers.map(({ user }) => (
-              <div
-                className="p-4 my-4 flex itemscenter hover:bg-slate-300 border-b-2 hover:rounded-lg  cursor-pointer"
-                onClick={() => fetchConversationMessages('new',user)}
-                key={user?.Email}
-              >
-                <div className="rounded-full overflow-hidden w-16 h-16 flex items-center justify-center">
-                  <img
-                    src={user?.Avatar}
-                    alt="Avatar"
-                    className="w-full h-full object-cover"
-                  />
+      {activeTab === "add-users" && (
+        <div className="h-full w-full md:w-[40%] border order-first bg-Light">
+          <div className="my-8 text-lg font-bold ml-6">Add New Users</div>
+          <div className="overflow-y-scroll h-[85%] px-6">
+            {allUsers.length > 0 ? (
+              allUsers.map(({ user }) => (
+                <div
+                  className="p-4 my-4 flex items-center hover:bg-slate-300 border-b-2 hover:rounded-lg cursor-pointer"
+                  onClick={() => fetchConversationMessages("new", user)}
+                  key={user?.Email}
+                >
+                  <div className="rounded-full overflow-hidden w-16 h-16 flex items-center justify-center">
+                    <img
+                      src={user?.Avatar}
+                      alt="Avatar"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="ml-4">
+                    <p className="font-medium">{user?.Name}</p>
+                    <p className="font-mute">{user?.Email}</p>
+                  </div>
                 </div>
-                <div className="ml-4">
-                  <p className="font-medium">{user?.Name}</p>
-                  <p className="font-mute">{user?.Email}</p>
-                </div>
+              ))
+            ) : (
+              <div className="mt-[5rem] font-semibold text-center text-lg">
+                No Registered Users
               </div>
-            ))
-          ) : (
-            <div className="mt-[5rem] font-semibold text-center text-lg ">
-              No Registered Users
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      </div>}
+      )}
     </div>
   );
 };
+
+export default Dashboard;
