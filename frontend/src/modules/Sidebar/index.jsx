@@ -5,6 +5,7 @@ import {
   faUserPlus,
   faMessage,
   faArrowRightFromBracket,
+  faXmark
 } from "@fortawesome/free-solid-svg-icons";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
@@ -20,7 +21,7 @@ export const Sidebar = ({ onTabChange }) => {
       }`}
     >
       <FontAwesomeIcon
-        icon={faBars}
+        icon={toggleSidebar?faXmark:faBars}
         size="xl"
         onClick={() =>
           setToggelSideBar((prevtoggleSidebar) => !prevtoggleSidebar)
