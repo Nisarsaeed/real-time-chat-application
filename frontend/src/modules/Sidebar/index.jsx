@@ -10,7 +10,7 @@ import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 
 export const Sidebar = ({ onTabChange }) => {
-  const [toggleSidebar, setToggelSideBar] = useState(true);
+  const [toggleSidebar, setToggelSideBar] = useState(false);
   const navigate = useNavigate();
 
   return (
