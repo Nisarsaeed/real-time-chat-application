@@ -16,7 +16,7 @@ export const Sidebar = ({ onTabChange }) => {
   return (
     <div
       className={`h-full bg-slate-200 flex flex-col !overflow-x-hidden z-20 order-first relative ${
-        toggleSidebar ? "w-[200px] items-start px-6" : "w-[50px] items-center"
+        toggleSidebar ? "w-[200px] items-start px-6" : "w-[80px] items-center"
       }`}
     >
       <FontAwesomeIcon
