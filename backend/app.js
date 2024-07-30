@@ -197,27 +197,33 @@ app.post("/api/message", async (req, res) => {
   try {
     const { conversationId, senderId, message, recieverId } = req.body;
     console.log({ conversationId, senderId, message, recieverId });
-    if (!senderId || !message)
+
+    if (!senderId || !message || !conversationId || !recieverId) {
       return res.status(400).send("Please fill all required fields");
+    }
+
+    let convId;
+
     if (conversationId === "new" && recieverId) {
       const newConversation = new Conversations({
         members: [senderId, recieverId],
       });
       await newConversation.save();
-      const newMessage = new Messages({
-        conversationId: newConversation._id,
-        senderId,
-        message,
-      });
-      await newMessage.save();
-      res.status(200).send("Message sent successfully");
-    } else if (!conversationId && !recieverId) {
-      res.status(400).send("Please fill all required fields");
+      convId = newConversation._id;
+    } else if (conversationId !== "new") {
+      convId = conversationId;
     }
-    const newMessage = new Messages({ conversationId, senderId, message });
+
+    const newMessage = new Messages({
+      conversationId: convId,
+      senderId,
+      message,
+    });
     await newMessage.save();
+    res.status(200).send("Message sent successfully");
   } catch (error) {
     console.log("Error ", error);
+    res.status(500).send("An error occurred while sending the message");
   }
 });
 
