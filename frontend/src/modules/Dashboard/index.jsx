@@ -9,6 +9,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { io } from "socket.io-client";
 import { Sidebar } from "../Sidebar";
+import { Spinner } from "../../components/Spinner";
+
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export const Dashboard = () => {
@@ -23,6 +25,7 @@ export const Dashboard = () => {
   const messageRef = useRef(null);
   const [activeTab, setActiveTab] = useState("chats");
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -61,6 +64,7 @@ export const Dashboard = () => {
   }, [socket, userDetail?.id]);
 
   const fetchConversations = useCallback(async () => {
+    setIsLoading(true);
     try {
       const res = await fetch(
         `${apiUrl}/api/conversation/${userDetail?.id}`,
@@ -81,6 +85,8 @@ export const Dashboard = () => {
       return resData;
     } catch (error) {
       console.error("Error fetching conversations:", error);
+    } finally{
+      setIsLoading(false);
     }
   }, [userDetail?.id]);
 
@@ -132,6 +138,7 @@ export const Dashboard = () => {
   }, [conversationMessages.messages]);
 
   const fetchConversationMessages = async (conversationId, user) => {
+    setIsLoading(true);
     try {
       const res = await fetch(
         `${apiUrl}/api/message/${conversationId}`,
@@ -158,6 +165,8 @@ export const Dashboard = () => {
       }
     } catch (error) {
       console.error("Error fetching messages:", error);
+    } finally{
+      setIsLoading(false);
     }
   };
 
@@ -216,6 +225,7 @@ export const Dashboard = () => {
   return (
     <div className="w-full h-screen flex !overflow-x-hidden">
       <Sidebar onTabChange={handleTabChange} />
+      <Spinner display={isLoading?'block':'hidden'}/>
       {activeTab === "chats" && (
         <div className="w-full md:w-[40%] border h-full bg-Light">
           <div className="flex items-center justify-center w-full h-[20%] border-b-2 border-slate-300">

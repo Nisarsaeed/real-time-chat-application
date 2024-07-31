@@ -3,10 +3,13 @@ import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { useNavigate } from "react-router-dom";
 import PropTypes from 'prop-types'
+import { Spinner } from "../../components/Spinner";
+
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export const Form = ({ isSignInPage }) => {
   const navigate = useNavigate();
+  const [isloading,setIsLoading] = useState(false); 
 
   const [data, setData] = useState({
     ...(!isSignInPage && {
@@ -30,36 +33,44 @@ export const Form = ({ isSignInPage }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-     //if user switches from signup and tries to login the profile img should not be able to give error
-     if(isSignInPage){
-       setProfileImg(null);
-      }
-    const formData = new FormData(); // Create a new FormData object
-    for (const key in data) {
-      formData.append(key, data[key]); // Append each key-value pair from the data object to formData
-    }
-    //only upload image on sign up page
-    if (!isSignInPage && profileImg) {
-      formData.append("profileImg", profileImg); // Append the profile image file to formData if it exists
-    }
-  
-    const res = await fetch(
-      `${apiUrl}/api/${isSignInPage ? "login" : "register"}`,
-      {
-        method: "POST",
-        body: formData, // Send formData as the request body
-      }
-    );
-  
-    if (res.status === 400) {
-      alert("Invalid Credentials");
-    } else {
-      const resData = await res.json();
-      if (resData.token) {
-        localStorage.setItem("user:token", resData.token);
-        localStorage.setItem("user:detail", JSON.stringify(resData.user));
-        navigate("/");
-      }
+    setIsLoading(true);
+    
+    try {
+      //if user switches from signup and tries to login the profile img should not be able to give error
+      if(isSignInPage){
+        setProfileImg(null);
+       }
+     const formData = new FormData(); // Create a new FormData object
+     for (const key in data) {
+       formData.append(key, data[key]); // Append each key-value pair from the data object to formData
+     }
+     //only upload image on sign up page
+     if (!isSignInPage && profileImg) {
+       formData.append("profileImg", profileImg); // Append the profile image file to formData if it exists
+     }
+   
+     const res = await fetch(
+       `${apiUrl}/api/${isSignInPage ? "login" : "register"}`,
+       {
+         method: "POST",
+         body: formData, // Send formData as the request body
+       }
+     );
+   
+     if (res.status === 400) {
+       alert("Invalid Credentials");
+     } else {
+       const resData = await res.json();
+       if (resData.token) {
+         localStorage.setItem("user:token", resData.token);
+         localStorage.setItem("user:detail", JSON.stringify(resData.user));
+         navigate("/");
+       }
+     }
+    } catch (error) {
+      console.error('error on form submit ',error)
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -111,6 +122,7 @@ export const Form = ({ isSignInPage }) => {
           {isSignInPage ? "Sign Up" : "Sign In"}
         </span>
       </div>
+      <Spinner display={isloading?'block':'hidden'} />
     </div>
   );
 }
