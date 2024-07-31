@@ -9,6 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { io } from "socket.io-client";
 import { Sidebar } from "../Sidebar";
+const apiUrl = import.meta.env.VITE_API_URL;
 
 export const Dashboard = () => {
   const [userDetail, setUserDetail] = useState(
@@ -62,7 +63,7 @@ export const Dashboard = () => {
   const fetchConversations = useCallback(async () => {
     try {
       const res = await fetch(
-        `http://localhost:8000/api/conversation/${userDetail?.id}`,
+        `${apiUrl}/api/conversation/${userDetail?.id}`,
         {
           method: "GET",
           headers: {
@@ -90,7 +91,7 @@ export const Dashboard = () => {
   useEffect(() => {
     const fetchAllUsers = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/api/users`, {
+        const res = await fetch(`${apiUrl}/api/users`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -133,7 +134,7 @@ export const Dashboard = () => {
   const fetchConversationMessages = async (conversationId, user) => {
     try {
       const res = await fetch(
-        `http://localhost:8000/api/message/${conversationId}`,
+        `${apiUrl}/api/message/${conversationId}`,
         {
           method: "GET",
           headers: {
@@ -175,7 +176,7 @@ export const Dashboard = () => {
 
       setMessages("");
 
-      const res = await fetch("http://localhost:8000/api/message", {
+      const res = await fetch(`${apiUrl}/api/message`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

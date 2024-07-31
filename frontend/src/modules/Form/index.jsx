@@ -3,6 +3,7 @@ import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { useNavigate } from "react-router-dom";
 import PropTypes from 'prop-types'
+const apiUrl = import.meta.env.VITE_API_URL;
 
 export const Form = ({ isSignInPage }) => {
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ export const Form = ({ isSignInPage }) => {
     }
   
     const res = await fetch(
-      `http://localhost:8000/api/${isSignInPage ? "login" : "register"}`,
+      `${apiUrl}/api/${isSignInPage ? "login" : "register"}`,
       {
         method: "POST",
         body: formData, // Send formData as the request body
