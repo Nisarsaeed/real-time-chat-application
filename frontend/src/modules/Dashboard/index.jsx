@@ -34,7 +34,7 @@ export const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    const newSocket = io("http://localhost:8080");
+    const newSocket = io(apiUrl);
     setSocket(newSocket);
 
     return () => {
