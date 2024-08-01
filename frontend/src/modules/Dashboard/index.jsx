@@ -26,6 +26,7 @@ export const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("chats");
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMsgSending, setIsMsgSending]= useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -171,6 +172,7 @@ export const Dashboard = () => {
   };
 
   const sendNewMessage = async () => {
+    setIsMsgSending(true);
     try {
       if (messages.trim() === "") {
         alert("Empty message cannot be sent");
@@ -215,6 +217,8 @@ export const Dashboard = () => {
       }
     } catch (error) {
       console.error("Error sending message:", error);
+    } finally{
+      setIsMsgSending(false)
     }
   };
 
@@ -225,7 +229,7 @@ export const Dashboard = () => {
   return (
     <div className="w-full h-dvh flex !overflow-x-hidden">
       <Sidebar onTabChange={handleTabChange} />
-      <Spinner display={isLoading?'block':'hidden'}/>
+      <Spinner display={isLoading ? "block" : "hidden"} />
       {activeTab === "chats" && (
         <div className="w-full md:w-[40%] border h-full bg-Light">
           <div className="flex items-center justify-center w-full h-[20%] border-b-2 border-slate-300">
@@ -340,11 +344,15 @@ export const Dashboard = () => {
               value={messages}
               onChange={(e) => setMessages(e.target.value)}
             />
-            <FontAwesomeIcon
-              icon={faPaperPlane}
-              className="ml-3 lg:ml-6 h-5 cursor-pointer"
-              onClick={() => sendNewMessage()}
-            />
+            {isMsgSending ? (
+              <Spinner isVariantSm={true} />
+            ) : (
+              <FontAwesomeIcon
+                icon={faPaperPlane}
+                className="ml-3 lg:ml-6 h-5 cursor-pointer"
+                onClick={() => sendNewMessage()}
+              />
+            )}
             <FontAwesomeIcon
               icon={faMicrophone}
               className="ml-3 lg:ml-6 h-5 cursor-pointer"
