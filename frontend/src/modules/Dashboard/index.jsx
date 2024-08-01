@@ -223,7 +223,7 @@ export const Dashboard = () => {
   };
 
   return (
-    <div className="w-full h-screen flex !overflow-x-hidden">
+    <div className="w-full h-dvh flex !overflow-x-hidden">
       <Sidebar onTabChange={handleTabChange} />
       <Spinner display={isLoading?'block':'hidden'}/>
       {activeTab === "chats" && (

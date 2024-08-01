@@ -81,7 +81,7 @@ export const Form = ({ isSignInPage }) => {
   };
 
   return (
-    <div className="w-full h-[100vh] flex flex-col justify-center items-center">
+    <div className="w-full h-dvh flex flex-col justify-center items-center">
       <div className="text-4xl font-extrabold my-3">
         Welcome {isSignInPage && "Back"}
       </div>
