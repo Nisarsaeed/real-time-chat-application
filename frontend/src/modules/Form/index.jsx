@@ -4,12 +4,15 @@ import { Button } from "../../components/Button";
 import { useNavigate } from "react-router-dom";
 import PropTypes from 'prop-types'
 import { Spinner } from "../../components/Spinner";
+import { Toaster } from "../../components/Toaster";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export const Form = ({ isSignInPage }) => {
   const navigate = useNavigate();
   const [isloading,setIsLoading] = useState(false); 
+  const [toasterMsg,setToasterMsg] = useState('');
+  const [isToasterError, setIsToasterError] = useState('');
 
   const [data, setData] = useState({
     ...(!isSignInPage && {
@@ -20,7 +23,6 @@ export const Form = ({ isSignInPage }) => {
   });
 
   const [profileImg, setProfileImg] = useState(null);
-  console.log(profileImg);
 
   const handleClick = () => {
     const destination = isSignInPage ? "/sign_up" : "/sign_in";
@@ -34,41 +36,45 @@ export const Form = ({ isSignInPage }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     try {
       //if user switches from signup and tries to login the profile img should not be able to give error
-      if(isSignInPage){
+      if (isSignInPage) {
         setProfileImg(null);
-       }
-     const formData = new FormData(); // Create a new FormData object
-     for (const key in data) {
-       formData.append(key, data[key]); // Append each key-value pair from the data object to formData
-     }
-     //only upload image on sign up page
-     if (!isSignInPage && profileImg) {
-       formData.append("profileImg", profileImg); // Append the profile image file to formData if it exists
-     }
-   
-     const res = await fetch(
-       `${apiUrl}/api/${isSignInPage ? "login" : "register"}`,
-       {
-         method: "POST",
-         body: formData, // Send formData as the request body
-       }
-     );
-   
-     if (res.status === 400) {
-       alert("Invalid Credentials");
-     } else {
-       const resData = await res.json();
-       if (resData.token) {
-         localStorage.setItem("user:token", resData.token);
-         localStorage.setItem("user:detail", JSON.stringify(resData.user));
-         navigate("/");
-       }
-     }
+      }
+      const formData = new FormData(); // Create a new FormData object
+      for (const key in data) {
+        formData.append(key, data[key]); // Append each key-value pair from the data object to formData
+      }
+      //only upload image on sign up page
+      if (!isSignInPage && profileImg) {
+        formData.append("profileImg", profileImg); // Append the profile image file to formData if it exists
+      }
+
+      const res = await fetch(
+        `${apiUrl}/api/${isSignInPage ? "login" : "register"}`,
+        {
+          method: "POST",
+          body: formData, // Send formData as the request body
+        }
+      );
+      if (!res.ok) {
+        const resMsg = await res.text();
+        setToasterMsg(resMsg,true);
+        setIsToasterError(true);
+      } else {
+        setToasterMsg(
+          `User ${isSignInPage ? "Logged In" : "Registered"} Successfully`
+        );
+        const resData = await res.json();
+        if (resData.token) {
+          localStorage.setItem("user:token", resData.token);
+          localStorage.setItem("user:detail", JSON.stringify(resData.user));
+          navigate("/");
+        }
+      }
     } catch (error) {
-      console.error('error on form submit ',error)
+      console.error("error on form submit ", error);
     } finally {
       setIsLoading(false);
     }
@@ -123,6 +129,7 @@ export const Form = ({ isSignInPage }) => {
         </span>
       </div>
       <Spinner display={isloading?'block':'hidden'} />
+      {toasterMsg && <Toaster msg={toasterMsg} onClose={()=>setToasterMsg('')} isError={isToasterError} />} 
     </div>
   );
 }
