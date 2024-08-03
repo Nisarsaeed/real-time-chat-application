@@ -6,6 +6,7 @@ import {
   faPlusCircle,
   faMicrophone,
   faPhone,
+  faLock
 } from "@fortawesome/free-solid-svg-icons";
 import { io } from "socket.io-client";
 import { Sidebar } from "../Sidebar";
@@ -304,7 +305,7 @@ export const Dashboard = () => {
           isMobile &&
           activeTab === "messages")) && (
         <div className="w-full md:w-[60%] border h-full relative">
-          <div className="py-4 px-4 md:px-6 my-4 h-[10%] flex items-center bg-slate-200 rounded-[3rem]  w-[75%] mx-auto">
+          <div className="py-4 px-4 md:px-6 my-4 h-[15%] flex items-center bg-slate-200 rounded-[3rem]  w-[75%] mx-auto">
             <div className="rounded-full overflow-hidden w-12 h-12 md:w-16 md:h-16 flex items-center justify-center">
               <img
                 src={conversationMessages?.reciever?.Avatar}
@@ -323,6 +324,10 @@ export const Dashboard = () => {
               className="h-5 cursor-pointer ml-auto mr-2"
             />
           </div>
+            <div className="w-full text-center text-xs md:text-base my-4 mx-2">
+              <FontAwesomeIcon icon={faLock} className="mr-3" />
+              <span>Messages are end-to-end encrypted</span>
+            </div>
           <div className="overflow-y-scroll h-[70%] w-full">
             <div className="px-8 py-4">
               {conversationMessages.messages.length > 0 ? (
