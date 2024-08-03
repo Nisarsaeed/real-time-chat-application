@@ -10,10 +10,13 @@ import {
 import { io } from "socket.io-client";
 import { Sidebar } from "../Sidebar";
 import { Spinner } from "../../components/Spinner";
+import CryptoJS from 'crypto-js'
 
 const apiUrl = import.meta.env.VITE_API_URL;
+const secretKey = import.meta.env.Secret_key || 'this-is-a-secret-key';
 
 export const Dashboard = () => {
+  console.log(secretKey,'key');
   const [userDetail, setUserDetail] = useState(
     JSON.parse(localStorage.getItem("user:detail"))
   );
@@ -27,6 +30,15 @@ export const Dashboard = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isLoading, setIsLoading] = useState(false);
   const [isMsgSending, setIsMsgSending]= useState(false);
+
+  const encryptMessage = (message) => {
+    return CryptoJS.AES.encrypt(message, secretKey).toString();
+  };
+  
+  const decryptMessage = (ciphertext) => {
+    const bytes = CryptoJS.AES.decrypt(ciphertext, secretKey);
+    return bytes.toString(CryptoJS.enc.Utf8);
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -156,11 +168,17 @@ export const Dashboard = () => {
       }
 
       const resData = await res.json();
+
+      const decryptedMessages = resData.map((msg) => ({
+        message: decryptMessage(msg.message),
+      }));
+
       setConversationMessages({
-        messages: resData,
+        messages: decryptedMessages,
         reciever: user,
         conversationId: conversationId,
       });
+
       if (isMobile) {
         handleTabChange("messages");
       }
@@ -184,6 +202,9 @@ export const Dashboard = () => {
         message: messages,
         conversationId: conversationMessages?.conversationId,
       });
+      
+      const encryptedMessage = encryptMessage(messages); 
+      console.log(encryptedMessage,'msg')
 
       setMessages("");
 
@@ -195,7 +216,7 @@ export const Dashboard = () => {
         body: JSON.stringify({
           conversationId: conversationMessages?.conversationId,
           senderId: userDetail?.id,
-          message: messages,
+          message: encryptedMessage,
           recieverId: conversationMessages?.reciever?.recieverId,
         }),
       });
