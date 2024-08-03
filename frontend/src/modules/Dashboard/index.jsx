@@ -13,10 +13,9 @@ import { Spinner } from "../../components/Spinner";
 import CryptoJS from 'crypto-js'
 
 const apiUrl = import.meta.env.VITE_API_URL;
-const secretKey = import.meta.env.Secret_key || 'this-is-a-secret-key';
+const secretKey = import.meta.env.VITE_Secret_key;
 
 export const Dashboard = () => {
-  console.log(secretKey,'key');
   const [userDetail, setUserDetail] = useState(
     JSON.parse(localStorage.getItem("user:detail"))
   );
