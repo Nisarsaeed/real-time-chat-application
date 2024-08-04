@@ -169,8 +169,9 @@ export const Dashboard = () => {
 
       const resData = await res.json();
 
-      const decryptedMessages = resData.map((msg) => ({
-        message: decryptMessage(msg.message),
+      const decryptedMessages = resData.map(msg => ({
+        ...msg,
+        message: decryptMessage(msg.message)
       }));
 
       setConversationMessages({
